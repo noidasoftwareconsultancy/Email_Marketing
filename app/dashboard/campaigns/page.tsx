@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
+import { CampaignScheduler } from '@/components/campaigns/CampaignScheduler';
 import { Campaign, Template } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,31 +21,51 @@ import {
   ChartBarIcon,
   PencilIcon,
   TrashIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  DocumentDuplicateIcon,
+  PlayIcon,
+  PauseIcon,
+  EyeIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 export default function CampaignsPage() {
-  const [campaigns, setcampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [filteredCampaigns, setFilteredCampaigns] = useState<Campaign[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [sendingCampaign, setSendingCampaign] = useState<string | null>(null);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [schedulingCampaign, setSchedulingCampaign] = useState<Campaign | null>(null);
   const [gmailConnected, setGmailConnected] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
   });
+
+  const selectedTemplateId = watch('templateId');
 
   useEffect(() => {
     fetchCampaigns();
     fetchTemplates();
     checkGmailConnection();
   }, []);
+
+  useEffect(() => {
+    filterCampaigns();
+  }, [campaigns, searchQuery, statusFilter]);
 
   const checkGmailConnection = async () => {
     try {
@@ -64,7 +85,7 @@ export default function CampaignsPage() {
       const response = await fetch('/api/campaigns');
       if (response.ok) {
         const data = await response.json();
-        setcampaigns(data);
+        setCampaigns(data);
       }
     } catch (error) {
       toast.error('Failed to fetch campaigns');
@@ -85,6 +106,26 @@ export default function CampaignsPage() {
     }
   };
 
+  const filterCampaigns = () => {
+    let filtered = campaigns;
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (campaign) =>
+          campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          campaign.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter !== 'ALL') {
+      filtered = filtered.filter((campaign) => campaign.status === statusFilter);
+    }
+
+    setFilteredCampaigns(filtered);
+  };
+
   const onSubmit = async (data: CampaignFormData) => {
     try {
       const url = editingCampaign ? `/api/campaigns/${editingCampaign.id}` : '/api/campaigns';
@@ -103,35 +144,144 @@ export default function CampaignsPage() {
         setEditingCampaign(null);
         fetchCampaigns();
       } else {
-        toast.error('Failed to save campaign');
+        const error = await response.json();
+        toast.error(error.error || 'Failed to save campaign');
       }
     } catch (error) {
       toast.error('An error occurred');
     }
   };
 
-  const handleSendCampaign = async (campaignId: string) => {
-    if (!confirm('Are you sure you want to send this campaign?')) return;
+  const handleScheduleCampaign = (campaign: Campaign) => {
+    setSchedulingCampaign(campaign);
+    setIsSchedulerOpen(true);
+  };
 
-    setSendingCampaign(campaignId);
+  const handleSchedule = async (scheduledAt: Date) => {
+    if (!schedulingCampaign) return;
+
+    try {
+      const response = await fetch(`/api/campaigns/${schedulingCampaign.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...schedulingCampaign,
+          scheduledAt: scheduledAt.toISOString(),
+          status: 'SCHEDULED',
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Campaign scheduled successfully!');
+        setIsSchedulerOpen(false);
+        setSchedulingCampaign(null);
+        fetchCampaigns();
+      } else {
+        toast.error('Failed to schedule campaign');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
+    }
+  };
+
+  const handleSendNow = async () => {
+    if (!schedulingCampaign) return;
+
+    setSendingCampaign(schedulingCampaign.id);
     try {
       const response = await fetch('/api/campaigns/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ campaignId }),
+        body: JSON.stringify({ campaignId: schedulingCampaign.id }),
       });
 
       if (response.ok) {
         const data = await response.json();
         toast.success(`Campaign sent! ${data.sent} emails delivered.`);
+        setIsSchedulerOpen(false);
+        setSchedulingCampaign(null);
         fetchCampaigns();
       } else {
-        toast.error('Failed to send campaign');
+        const error = await response.json();
+        toast.error(error.error || 'Failed to send campaign');
       }
     } catch (error) {
       toast.error('An error occurred');
     } finally {
       setSendingCampaign(null);
+    }
+  };
+
+  const handlePauseCampaign = async (campaignId: string) => {
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/pause`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        toast.success('Campaign paused');
+        fetchCampaigns();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to pause campaign');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
+    }
+  };
+
+  const handleResumeCampaign = async (campaignId: string) => {
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/resume`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        toast.success('Campaign resumed');
+        fetchCampaigns();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to resume campaign');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
+    }
+  };
+
+  const handleDuplicate = async (campaignId: string) => {
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/duplicate`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        toast.success('Campaign duplicated');
+        fetchCampaigns();
+      } else {
+        toast.error('Failed to duplicate campaign');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
+    }
+  };
+
+  const handleRerun = async (campaignId: string) => {
+    if (!confirm('This will reset the campaign and allow you to send it again. Continue?')) return;
+
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/rerun`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        toast.success('Campaign reset and ready to rerun');
+        fetchCampaigns();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to rerun campaign');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
     }
   };
 
@@ -166,6 +316,43 @@ export default function CampaignsPage() {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedCampaigns.length === 0) return;
+    if (!confirm(`Delete ${selectedCampaigns.length} campaigns?`)) return;
+
+    try {
+      const response = await fetch('/api/campaigns/bulk-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campaignIds: selectedCampaigns }),
+      });
+
+      if (response.ok) {
+        toast.success(`${selectedCampaigns.length} campaigns deleted`);
+        setSelectedCampaigns([]);
+        fetchCampaigns();
+      } else {
+        toast.error('Failed to delete campaigns');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
+    }
+  };
+
+  const toggleSelectCampaign = (id: string) => {
+    setSelectedCampaigns((prev) =>
+      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedCampaigns.length === filteredCampaigns.length) {
+      setSelectedCampaigns([]);
+    } else {
+      setSelectedCampaigns(filteredCampaigns.map((c) => c.id));
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'COMPLETED':
@@ -193,10 +380,14 @@ export default function CampaignsPage() {
         return <ClockIcon className="w-5 h-5" />;
       case 'FAILED':
         return <XCircleIcon className="w-5 h-5" />;
+      case 'PAUSED':
+        return <PauseIcon className="w-5 h-5" />;
       default:
         return null;
     }
   };
+
+  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
 
   return (
     <DashboardLayout>
@@ -273,101 +464,205 @@ export default function CampaignsPage() {
           </Card>
         </div>
 
+        {/* Search and Filter */}
+        <Card>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search campaigns..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <FunnelIcon className="w-5 h-5 text-gray-400" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="ALL">All Status</option>
+                <option value="DRAFT">Draft</option>
+                <option value="SCHEDULED">Scheduled</option>
+                <option value="SENDING">Sending</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="PAUSED">Paused</option>
+                <option value="FAILED">Failed</option>
+              </select>
+            </div>
+            {selectedCampaigns.length > 0 && (
+              <Button variant="danger" size="sm" onClick={handleBulkDelete}>
+                <TrashIcon className="w-4 h-4 mr-1" />
+                Delete ({selectedCampaigns.length})
+              </Button>
+            )}
+          </div>
+        </Card>
+
         {/* Campaigns List */}
         {loading ? (
           <Card>
             <p className="text-center text-gray-500 py-8">Loading campaigns...</p>
           </Card>
-        ) : campaigns.length === 0 ? (
+        ) : filteredCampaigns.length === 0 ? (
           <Card>
             <div className="text-center py-12">
               <PaperAirplaneIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No campaigns yet
+                {campaigns.length === 0 ? 'No campaigns yet' : 'No campaigns found'}
               </h3>
               <p className="text-gray-600 mb-6">
-                Create your first campaign to start sending emails
+                {campaigns.length === 0
+                  ? 'Create your first campaign to start sending emails'
+                  : 'Try adjusting your search or filters'}
               </p>
-              <Button onClick={() => setIsModalOpen(true)}>
-                <PlusIcon className="w-5 h-5 mr-2" />
-                Create Campaign
-              </Button>
+              {campaigns.length === 0 && (
+                <Button onClick={() => setIsModalOpen(true)}>
+                  <PlusIcon className="w-5 h-5 mr-2" />
+                  Create Campaign
+                </Button>
+              )}
             </div>
           </Card>
         ) : (
           <div className="space-y-4">
-            {campaigns.map((campaign) => (
+            {/* Select All */}
+            {filteredCampaigns.length > 0 && (
+              <div className="flex items-center gap-2 px-2">
+                <input
+                  type="checkbox"
+                  checked={selectedCampaigns.length === filteredCampaigns.length}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+                <span className="text-sm text-gray-600">Select All</span>
+              </div>
+            )}
+
+            {filteredCampaigns.map((campaign) => (
               <Card key={campaign.id} hover>
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedCampaigns.includes(campaign.id)}
+                    onChange={() => toggleSelectCampaign(campaign.id)}
+                    className="mt-1 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {campaign.name}
-                      </h3>
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                          campaign.status
-                        )}`}
-                      >
-                        {getStatusIcon(campaign.status)}
-                        {campaign.status}
-                      </span>
-                    </div>
-                    {campaign.description && (
-                      <p className="text-sm text-gray-600 mb-3">{campaign.description}</p>
-                    )}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-500">Recipients</p>
-                        <p className="font-semibold text-gray-900">
-                          {campaign.totalRecipients}
-                        </p>
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {campaign.name}
+                          </h3>
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
+                              campaign.status
+                            )}`}
+                          >
+                            {getStatusIcon(campaign.status)}
+                            {campaign.status}
+                          </span>
+                        </div>
+                        {campaign.description && (
+                          <p className="text-sm text-gray-600 mb-3">{campaign.description}</p>
+                        )}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-500">Recipients</p>
+                            <p className="font-semibold text-gray-900">
+                              {campaign.totalRecipients}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Sent</p>
+                            <p className="font-semibold text-green-600">{campaign.totalSent}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Opened</p>
+                            <p className="font-semibold text-blue-600">{campaign.totalOpened}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500">Clicked</p>
+                            <p className="font-semibold text-purple-600">
+                              {campaign.totalClicked}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-gray-500">Sent</p>
-                        <p className="font-semibold text-green-600">{campaign.totalSent}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Opened</p>
-                        <p className="font-semibold text-blue-600">{campaign.totalOpened}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Clicked</p>
-                        <p className="font-semibold text-purple-600">
-                          {campaign.totalClicked}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {campaign.status === 'DRAFT' && (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleSendCampaign(campaign.id)}
-                          isLoading={sendingCampaign === campaign.id}
-                        >
-                          <PaperAirplaneIcon className="w-4 h-4 mr-1" />
-                          Send Now
-                        </Button>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {campaign.status === 'DRAFT' && (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleScheduleCampaign(campaign)}
+                              disabled={!gmailConnected}
+                            >
+                              <PaperAirplaneIcon className="w-4 h-4 mr-1" />
+                              Send
+                            </Button>
+                            <button
+                              onClick={() => handleEdit(campaign)}
+                              className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <PencilIcon className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+                        {(campaign.status === 'SENDING' || campaign.status === 'SCHEDULED') && (
+                          <button
+                            onClick={() => handlePauseCampaign(campaign.id)}
+                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                            title="Pause"
+                          >
+                            <PauseIcon className="w-5 h-5" />
+                          </button>
+                        )}
+                        {campaign.status === 'PAUSED' && (
+                          <button
+                            onClick={() => handleResumeCampaign(campaign.id)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Resume"
+                          >
+                            <PlayIcon className="w-5 h-5" />
+                          </button>
+                        )}
+                        {(campaign.status === 'COMPLETED' || campaign.status === 'FAILED') && (
+                          <button
+                            onClick={() => handleRerun(campaign.id)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Rerun Campaign"
+                          >
+                            <ArrowPathIcon className="w-5 h-5" />
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleEdit(campaign)}
-                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          onClick={() => handleDuplicate(campaign.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Duplicate"
                         >
-                          <PencilIcon className="w-5 h-5" />
+                          <DocumentDuplicateIcon className="w-5 h-5" />
                         </button>
-                      </>
-                    )}
-                    <Button size="sm" variant="outline">
-                      <ChartBarIcon className="w-4 h-4 mr-1" />
-                      View Stats
-                    </Button>
-                    <button
-                      onClick={() => handleDelete(campaign.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                        <a
+                          href={`/dashboard/campaigns/${campaign.id}/analytics`}
+                          className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="View Analytics"
+                        >
+                          <ChartBarIcon className="w-5 h-5" />
+                        </a>
+                        <button
+                          onClick={() => handleDelete(campaign.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -376,7 +671,7 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      {/* Create Campaign Modal */}
+      {/* Create/Edit Campaign Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
@@ -419,6 +714,25 @@ export default function CampaignsPage() {
               <p className="mt-1 text-sm text-red-600">{errors.templateId.message}</p>
             )}
           </div>
+
+          {/* Template Preview */}
+          {selectedTemplate && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="flex items-start justify-between mb-2">
+                <h4 className="font-semibold text-gray-900">Template Preview</h4>
+                <EyeIcon className="w-5 h-5 text-gray-400" />
+              </div>
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>Subject:</strong> {selectedTemplate.subject}
+              </p>
+              {selectedTemplate.previewText && (
+                <p className="text-sm text-gray-600">
+                  <strong>Preview:</strong> {selectedTemplate.previewText}
+                </p>
+              )}
+            </div>
+          )}
+
           <Input
             label="Target Tags (comma separated)"
             {...register('targetTags')}
@@ -453,6 +767,27 @@ export default function CampaignsPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Campaign Scheduler Modal */}
+      <Modal
+        isOpen={isSchedulerOpen}
+        onClose={() => {
+          setIsSchedulerOpen(false);
+          setSchedulingCampaign(null);
+        }}
+        title={`Send Campaign: ${schedulingCampaign?.name}`}
+        size="lg"
+      >
+        {schedulingCampaign && (
+          <CampaignScheduler
+            campaignId={schedulingCampaign.id}
+            recipientCount={schedulingCampaign.totalRecipients}
+            onSchedule={handleSchedule}
+            onSendNow={handleSendNow}
+            isLoading={sendingCampaign === schedulingCampaign.id}
+          />
+        )}
       </Modal>
     </DashboardLayout>
   );

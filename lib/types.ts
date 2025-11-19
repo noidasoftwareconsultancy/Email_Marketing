@@ -41,6 +41,12 @@ export interface Template {
   htmlBody: string;
   textBody?: string;
   category?: string;
+  totalSent: number;
+  totalOpened: number;
+  totalClicked: number;
+  avgOpenRate: number;
+  avgClickRate: number;
+  performanceScore: number;
   createdAt: Date;
 }
 
