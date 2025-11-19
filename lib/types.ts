@@ -60,6 +60,7 @@ export interface Campaign {
   targetTags: string[];
   scheduledAt?: Date;
   sentAt?: Date;
+  completedAt?: Date;
   totalRecipients: number;
   totalSent: number;
   totalFailed: number;

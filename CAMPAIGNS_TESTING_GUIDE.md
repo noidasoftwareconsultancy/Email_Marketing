@@ -207,6 +207,22 @@ DATABASE_URL="your_postgresql_url"
 - ✅ Success toast appears
 - ✅ Play icon replaced with pause icon
 
+### Scenario 13b: Rerun Completed Campaign
+**Steps:**
+1. Find a COMPLETED campaign
+2. Click rerun icon (circular arrow)
+3. Confirm in dialog
+4. Wait for operation
+
+**Expected Result:**
+- ✅ Confirmation dialog appears
+- ✅ Campaign status changes to DRAFT
+- ✅ All stats reset to 0
+- ✅ Recipient count recalculated
+- ✅ Success toast appears
+- ✅ Campaign ready to send again
+- ✅ Old email logs preserved for history
+
 ### Scenario 14: View Campaign Analytics
 **Steps:**
 1. Find a COMPLETED campaign

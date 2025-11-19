@@ -111,6 +111,7 @@ export async function POST(request: NextRequest) {
       data: {
         status: 'COMPLETED',
         sentAt: new Date(),
+        completedAt: new Date(),
         totalSent: sent,
         totalFailed: failed,
       },

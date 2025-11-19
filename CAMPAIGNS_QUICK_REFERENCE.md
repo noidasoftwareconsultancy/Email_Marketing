@@ -53,6 +53,7 @@ lib/
 | POST | `/api/campaigns/send` | Send campaign |
 | POST | `/api/campaigns/[id]/pause` | Pause campaign |
 | POST | `/api/campaigns/[id]/resume` | Resume campaign |
+| POST | `/api/campaigns/[id]/rerun` | Rerun campaign |
 | POST | `/api/campaigns/[id]/duplicate` | Duplicate campaign |
 | POST | `/api/campaigns/bulk-delete` | Bulk delete |
 | GET | `/api/campaigns/[id]/analytics` | Get analytics |
@@ -61,10 +62,10 @@ lib/
 
 ```
 DRAFT → SCHEDULED → SENDING → COMPLETED
-  ↓         ↓          ↓
-  └────→ PAUSED ←──────┘
-            ↓
-         FAILED
+  ↓         ↓          ↓            ↓
+  └────→ PAUSED ←──────┘      (Rerun → DRAFT)
+            ↓                       ↑
+         FAILED ────────────────────┘
 ```
 
 ## 🎯 Common Tasks

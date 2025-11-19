@@ -68,6 +68,7 @@ DELETE /api/campaigns/[id]         - Delete campaign
 POST   /api/campaigns/send         - Send campaign immediately
 POST   /api/campaigns/[id]/pause   - Pause campaign
 POST   /api/campaigns/[id]/resume  - Resume paused campaign
+POST   /api/campaigns/[id]/rerun   - Rerun completed/failed campaign
 POST   /api/campaigns/[id]/duplicate - Duplicate campaign
 POST   /api/campaigns/bulk-delete  - Delete multiple campaigns
 ```
@@ -167,6 +168,7 @@ enum CampaignStatus {
 - **Edit**: Click pencil icon on draft campaigns
 - **Pause**: Click pause icon on sending/scheduled campaigns
 - **Resume**: Click play icon on paused campaigns
+- **Rerun**: Click rerun icon on completed/failed campaigns to reset and resend
 - **Duplicate**: Click duplicate icon to clone campaign
 - **Delete**: Click trash icon to remove campaign
 - **Bulk Delete**: Select multiple campaigns and click bulk delete
@@ -232,6 +234,7 @@ enum CampaignStatus {
 - CSRF protection on all mutations
 
 ## Future Enhancements
+- [x] Rerun completed/failed campaigns ✅
 - [ ] A/B testing support
 - [ ] Email personalization variables
 - [ ] Advanced segmentation

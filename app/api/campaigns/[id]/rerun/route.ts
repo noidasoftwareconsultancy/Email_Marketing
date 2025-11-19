@@ -36,7 +36,7 @@ export async function POST(
       },
     });
 
-    // Reset campaign for rerun
+    // Reset campaign for rerun (keep old email logs for history)
     const updatedCampaign = await prisma.campaign.update({
       where: { id },
       data: {
@@ -54,9 +54,6 @@ export async function POST(
         template: true,
       },
     });
-
-    // Note: We keep the old email logs for historical reference
-    // They won't interfere with the new campaign run
 
     return NextResponse.json({
       campaign: updatedCampaign,
