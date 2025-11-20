@@ -124,15 +124,37 @@ model Campaign {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   emailLogs   EmailLog[]
+  runs        CampaignRun[]
 
   @@index([userId])
   @@index([status])
+}
+
+model CampaignRun {
+  id              String      @id @default(cuid())
+  campaignId      String
+  campaign        Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  runNumber       Int
+  status          CampaignStatus @default(DRAFT)
+  totalRecipients Int         @default(0)
+  totalSent       Int         @default(0)
+  totalFailed     Int         @default(0)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  emailLogs       EmailLog[]
+
+  @@index([campaignId])
+  @@unique([campaignId, runNumber])
 }
 
 model EmailLog {
   id          String      @id @default(cuid())
   campaignId  String
   campaign    Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  runId       String?
+  run         CampaignRun? @relation(fields: [runId], references: [id], onDelete: SetNull)
   contactId   String
   contact     Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
   status      EmailStatus
@@ -144,6 +166,7 @@ model EmailLog {
   createdAt   DateTime    @default(now())
 
   @@index([campaignId])
+  @@index([runId])
   @@index([contactId])
   @@index([status])
 }
