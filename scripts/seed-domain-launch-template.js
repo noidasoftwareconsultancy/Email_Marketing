@@ -82,7 +82,7 @@ async function main() {
     console.log('   Variables: {{firstName}}, {{website}}, {{cta_url}}, {{logo_white_url}}');
     console.log('\n✨ Template is ready to use in campaigns!');
     console.log('\n📝 Next Steps:');
-    console.log('   1. Visit: http://localhost:3000/dashboard/templates/domain-launch-preview');
+    console.log('   1. Visit: http://ewynk.com/dashboard/templates/domain-launch-preview');
     console.log('   2. Preview the template with sample data');
     console.log('   3. Create a campaign using this template');
     console.log('   4. Set your booking URL as the CTA');

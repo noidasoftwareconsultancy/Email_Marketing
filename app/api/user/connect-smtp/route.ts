@@ -26,9 +26,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Store credentials (in production, encrypt the password!)
-    const user = await prisma.user.update({
+    const user = await prisma.user.upsert({
       where: { id: userId },
-      data: {
+      update: {
+        email: email,
+        googleTokens: {
+          type: 'smtp',
+          email: email,
+          password: password, // TODO: Encrypt in production
+        },
+      },
+      create: {
+        id: userId,
         email: email,
         googleTokens: {
           type: 'smtp',

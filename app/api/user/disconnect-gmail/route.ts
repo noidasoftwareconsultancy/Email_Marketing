@@ -6,9 +6,14 @@ export async function POST(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id') || 'demo-user-id';
 
-    const user = await prisma.user.update({
+    const user = await prisma.user.upsert({
       where: { id: userId },
-      data: {
+      update: {
+        googleTokens: Prisma.JsonNull,
+      },
+      create: {
+        id: userId,
+        email: 'user@example.com',
         googleTokens: Prisma.JsonNull,
       },
     });

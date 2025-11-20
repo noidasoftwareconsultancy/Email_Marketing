@@ -7,7 +7,7 @@ The template is now in your database and ready to use.
 ## 🚀 Quick Start (3 Steps)
 
 ### Step 1: Preview the Template
-Visit: http://localhost:3000/dashboard/templates/domain-launch-preview
+Visit: http://ewynk.com/dashboard/templates/domain-launch-preview
 
 - See the exact design
 - Test with different data
@@ -176,13 +176,13 @@ Book Your Onboarding Call  →  [Your CTA]
 ## 📱 Preview Pages
 
 **Live Preview:**
-http://localhost:3000/dashboard/templates/domain-launch-preview
+http://ewynk.com/dashboard/templates/domain-launch-preview
 
 **Variable Test:**
-http://localhost:3000/dashboard/templates/test-variables
+http://ewynk.com/dashboard/templates/test-variables
 
 **Logo Test:**
-http://localhost:3000/dashboard/test-logos
+http://ewynk.com/dashboard/test-logos
 
 ## 🆘 Troubleshooting
 
@@ -192,7 +192,7 @@ http://localhost:3000/dashboard/test-logos
 - Verify variable syntax: `{{variable}}`
 
 ### "Logo not showing"
-- Visit: http://localhost:3000/dashboard/test-logos
+- Visit: http://ewynk.com/dashboard/test-logos
 - Check `.env` has `NEXT_PUBLIC_APP_URL`
 - See: `LOGO_TROUBLESHOOTING.md`
 

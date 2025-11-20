@@ -125,7 +125,7 @@ log('  4. Use all contact features', 'cyan');
 
 log('\nNext steps:', 'yellow');
 log('  npm run dev', 'cyan');
-log('  Open: http://localhost:3000/dashboard/contacts', 'cyan');
+log('  Open: http://ewynk.com/dashboard/contacts', 'cyan');
 log('  Click: "Add Contact" or "Import Excel"', 'cyan');
 
 console.log('');

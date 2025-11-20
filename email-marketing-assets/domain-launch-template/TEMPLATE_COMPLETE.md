@@ -110,7 +110,7 @@ node scripts/seed-domain-launch-template.js
 ```
 
 ### Step 2: Preview Template
-Visit: `http://localhost:3000/dashboard/templates/domain-launch-preview`
+Visit: `http://ewynk.com/dashboard/templates/domain-launch-preview`
 
 ### Step 3: Prepare Contacts
 Ensure your contacts have:
@@ -280,13 +280,13 @@ node scripts/seed-domain-launch-template.js
 npm run dev
 
 # Preview template
-# Visit: http://localhost:3000/dashboard/templates/domain-launch-preview
+# Visit: http://ewynk.com/dashboard/templates/domain-launch-preview
 
 # Test variables
-# Visit: http://localhost:3000/dashboard/templates/test-variables
+# Visit: http://ewynk.com/dashboard/templates/test-variables
 
 # Test logos
-# Visit: http://localhost:3000/dashboard/test-logos
+# Visit: http://ewynk.com/dashboard/test-logos
 ```
 
 ## Support Resources

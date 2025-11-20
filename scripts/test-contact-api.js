@@ -30,7 +30,7 @@ async function testCreateContact() {
   console.log('\n📡 Sending POST request to /api/contacts...\n');
 
   try {
-    const response = await fetch('http://localhost:3000/api/contacts', {
+    const response = await fetch('http://ewynk.com/api/contacts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ async function testGetContacts() {
   console.log('📡 Sending GET request to /api/contacts...\n');
 
   try {
-    const response = await fetch('http://localhost:3000/api/contacts');
+    const response = await fetch('http://ewynk.com/api/contacts');
     const data = await response.json();
 
     if (response.ok) {
@@ -106,7 +106,7 @@ async function main() {
     console.log('1. Add contacts manually via the UI');
     console.log('2. Import contacts from CSV');
     console.log('3. Import contacts from Excel');
-    console.log('\nOpen: http://localhost:3000/dashboard/contacts\n');
+    console.log('\nOpen: http://ewynk.com/dashboard/contacts\n');
   } else {
     console.log('⚠️  Some tests failed. Please check the errors above.\n');
   }

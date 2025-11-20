@@ -171,7 +171,7 @@ export default function TestLogosPage() {
                 Add to your <code className="bg-blue-100 px-1 py-0.5 rounded">.env</code> file:
               </p>
               <pre className="mt-2 bg-blue-100 p-3 rounded text-xs overflow-x-auto">
-                NEXT_PUBLIC_APP_URL=http://localhost:3000
+                NEXT_PUBLIC_APP_URL=http://ewynk.com
               </pre>
               <p className="mt-2 text-xs">
                 Then restart your development server.

@@ -81,9 +81,9 @@ const variables = {
   email: testContact.email,
   cta_url: 'https://calendly.com/ewynk/onboarding',
   unsubscribe_url: 'https://example.com/unsubscribe?contact=test-1',
-  logo_url: 'http://localhost:3000/api/assets/logo?type=black',
-  logo_white_url: 'http://localhost:3000/api/assets/logo?type=white',
-  logo_black_url: 'http://localhost:3000/api/assets/logo?type=black',
+  logo_url: 'http://ewynk.com/api/assets/logo?type=black',
+  logo_white_url: 'http://ewynk.com/api/assets/logo?type=white',
+  logo_black_url: 'http://ewynk.com/api/assets/logo?type=black',
 };
 
 // Load template

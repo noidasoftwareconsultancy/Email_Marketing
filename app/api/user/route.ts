@@ -5,13 +5,15 @@ export async function GET(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id') || 'demo-user-id';
     
-    const user = await prisma.user.findUnique({
+    // Use upsert to create user if it doesn't exist
+    const user = await prisma.user.upsert({
       where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: 'user@example.com', // Default email, will be updated when connecting SMTP
+      },
     });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
 
     return NextResponse.json(user);
   } catch (error: any) {
@@ -28,9 +30,15 @@ export async function PUT(request: NextRequest) {
     const userId = request.headers.get('x-user-id') || 'demo-user-id';
     const body = await request.json();
 
-    const user = await prisma.user.update({
+    const user = await prisma.user.upsert({
       where: { id: userId },
-      data: {
+      update: {
+        name: body.name,
+        email: body.email,
+        avatar: body.avatar,
+      },
+      create: {
+        id: userId,
         name: body.name,
         email: body.email,
         avatar: body.avatar,
