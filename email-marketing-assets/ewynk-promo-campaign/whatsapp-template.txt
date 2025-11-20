@@ -1,0 +1,14 @@
+Hi {{name}} — Vishal from eWynk here. 👋
+
+Quick offer: a free 15-minute strategy call to review your website & automation opportunities.
+
+No pressure — just practical suggestions.
+
+Book here: {{cta_url}}
+
+Questions? Reply anytime!
+
+---
+Vishal Vishwakarma
+eWynk | Digital Transformation
+📞 +91-9971978446

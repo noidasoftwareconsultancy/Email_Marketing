@@ -1,0 +1,16 @@
+{
+  "primary": "Quick help with launching {{website}}",
+  "alternatives": [
+    "{{firstName}}, ready to launch {{website}}?",
+    "Need help getting {{website}} live?",
+    "{{website}} - Let's get it launched",
+    "Quick question about {{website}}",
+    "{{firstName}}, saw your domain {{website}}",
+    "Help launching {{website}} - 5 min call?",
+    "{{website}} launch assistance"
+  ],
+  "abTest": {
+    "variantA": "Quick help with launching {{website}}",
+    "variantB": "{{firstName}}, ready to launch {{website}}?"
+  }
+}

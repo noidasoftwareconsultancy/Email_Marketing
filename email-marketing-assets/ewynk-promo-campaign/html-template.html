@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eWynk — Unlock Your Business Potential</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{ --brand-1:#0ea5e9; --brand-2:#3b82f6; --accent-1:#0c4a6e; --muted:#64748b; --bg:#f8fafc; --card-bg:#ffffff; --cta-text:#0369a1; }
+    body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    table { border-collapse: collapse !important; }
+    img { border:0; line-height:100%; outline:none; text-decoration:none; display:block; }
+    a { color: inherit; }
+    @media only screen and (max-width: 620px) {
+      .container { width:100% !important; border-radius:0 !important; }
+      .inner { padding-left:18px !important; padding-right:18px !important; padding-top:22px !important; padding-bottom:22px !important; }
+      .stack { display:block !important; width:100% !important; box-sizing:border-box; }
+      .solutions-table td { display:block !important; width:100% !important; }
+      .cta-button { padding:14px 20px !important; width:100% !important; box-sizing:border-box; }
+      .hero-title { font-size:22px !important; }
+      .lead { font-size:15px !important; }
+      .footer-text { font-size:13px !important; }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg:#0b1220; --card-bg:#071029; --muted:#94a3b8; --accent-1:#e0f2fe; }
+      body { background-color: var(--bg) !important; color: #cbd5e1 !important; }
+      .outer-table { background-color: var(--bg) !important; }
+      .card { background-color: var(--card-bg) !important; box-shadow: none !important; border: 1px solid rgba(255,255,255,0.04) !important; }
+      .panel { background: linear-gradient(135deg, rgba(240,249,255,0.03), rgba(224,242,254,0.02)) !important; border-left-color: rgba(14,165,233,0.15) !important; }
+      .cta-wrap { background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(59,130,246,0.10)) !important; }
+      .cta-button { background-color: #ffffff !important; color: var(--cta-text) !important; }
+      .muted { color: var(--muted) !important; }
+      .heading { color: var(--accent-1) !important; }
+    }
+    .wrap-link { word-break: break-word; }
+  </style>
+</head>
+<body style="margin:0; padding:0; background-color:#f8fafc; font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="outer-table" style="background-color:#f8fafc; padding:20px 0; width:100%;">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" class="container card" style="width:600px; max-width:100%; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05);">
+        <tr>
+          <td style="background: linear-gradient(135deg,#0ea5e9 0%,#3b82f6 100%); padding:40px 30px; text-align:center;">
+            <!-- Logo with fallback to text -->
+            <img src="{{logo_white_url}}" alt="eWynk Logo" width="120" style="display:block; margin:0 auto 10px; max-width:100%; height:auto;" />
+            <h1 class="hero-title" style="margin:0 0 10px; font-size:28px; font-weight:700; color:#ffffff; letter-spacing:-0.3px;">eWynk</h1>
+            <p style="margin:0; color: rgba(224,242,254,0.95); font-size:14px; font-weight:500;">Digital Transformation Partner</p>
+          </td>
+        </tr>
+        
+        <tr>
+          <td class="inner" style="padding:35px 30px 25px;">
+            <p style="margin:0 0 8px; font-size:17px; color:#0f1724; font-weight:600;" class="heading">Hi {{name}},</p>
+            <p style="margin:0; font-size:16px; line-height:1.7; color:#475569;" class="lead">
+              Hope you're doing well! We're reaching out to introduce <strong>eWynk</strong> — a digital transformation partner trusted by growing businesses across India and beyond.
+            </p>
+            <p style="margin-top:12px; font-size:16px; line-height:1.7; color:#475569;">
+              Whether you're building something new, improving an existing project, or exploring digital opportunities, our team helps you create a strong, scalable, and high-performing online presence.
+            </p>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 30px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="panel" style="background: linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%); border-radius:8px; border-left:4px solid #0ea5e9;">
+              <tr><td style="padding:20px 25px;">
+                <p style="margin:0 0 12px; font-size:15px; color:#0c4a6e; font-weight:600;">Trusted by Growing Businesses</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33%" style="text-align:center; padding:5px;">
+                      <p style="margin:0; font-size:24px; font-weight:700; color:#0ea5e9;">100+</p>
+                      <p style="margin:5px 0 0; font-size:12px; color:#475569;">Brands Served</p>
+                    </td>
+                    <td width="33%" style="text-align:center; padding:5px; border-left:1px solid #bae6fd; border-right:1px solid #bae6fd;">
+                      <p style="margin:0; font-size:24px; font-weight:700; color:#0ea5e9;">15+</p>
+                      <p style="margin:5px 0 0; font-size:12px; color:#475569;">Industries</p>
+                    </td>
+                    <td width="33%" style="text-align:center; padding:5px;">
+                      <p style="margin:0; font-size:24px; font-weight:700; color:#0ea5e9;">95%</p>
+                      <p style="margin:5px 0 0; font-size:12px; color:#475569;">On-Time Delivery</p>
+                    </td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 25px;">
+            <h2 style="color:#0f1724; margin:0 0 12px; font-size:22px; font-weight:700;">We Help You Build, Automate & Scale</h2>
+            <p style="margin:0 0 10px; font-size:16px; color:#475569;">From stunning websites to complete automation systems, we support businesses at every stage of their digital journey:</p>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 30px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="solutions-table">
+              <tr>
+                <td style="padding-bottom:15px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; border-left:3px solid #3b82f6;">
+                    <tr><td style="padding:18px 20px;">
+                      <p style="margin:0 0 6px; font-size:15px; font-weight:600; color:#0f1724;">⚡ Custom Web Development</p>
+                      <p style="margin:0; font-size:14px; color:#64748b; line-height:1.6;">Modern, fast, SEO-friendly websites for stronger conversions</p>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              
+              <tr>
+                <td style="padding-bottom:15px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; border-left:3px solid #8b5cf6;">
+                    <tr><td style="padding:18px 20px;">
+                      <p style="margin:0 0 6px; font-size:15px; font-weight:600; color:#0f1724;">⚙ Workflow Automation</p>
+                      <p style="margin:0; font-size:14px; color:#64748b; line-height:1.6;">Save hours weekly with AI-powered automation systems</p>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              
+              <tr>
+                <td style="padding-bottom:15px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; border-left:3px solid #10b981;">
+                    <tr><td style="padding:18px 20px;">
+                      <p style="margin:0 0 6px; font-size:15px; font-weight:600; color:#0f1724;">◉ Digital Marketing</p>
+                      <p style="margin:0; font-size:14px; color:#64748b; line-height:1.6;">Get more traffic, leads, and brand visibility</p>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              
+              <tr>
+                <td>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; border-left:3px solid #f59e0b;">
+                    <tr><td style="padding:18px 20px;">
+                      <p style="margin:0 0 6px; font-size:15px; font-weight:600; color:#0f1724;">◆ Shopify Development</p>
+                      <p style="margin:0; font-size:14px; color:#64748b; line-height:1.6;">End-to-end e-commerce setup with optimization</p>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+             </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 30px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg,#fef3c7 0%,#fde68a 100%); border-radius:8px;">
+              <tr><td style="padding:25px;">
+                <p style="margin:0 0 15px; font-size:16px; font-weight:600; color:#78350f;">Why Partner with eWynk?</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="50%" style="padding-right:10px; vertical-align:top;">
+                      <p style="margin:0 0 10px; font-size:14px; color:#92400e;">✓ 95% on-time delivery</p>
+                      <p style="margin:0 0 10px; font-size:14px; color:#92400e;">✓ 99% client satisfaction</p>
+                    </td>
+                    <td width="50%" style="padding-left:10px; vertical-align:top;">
+                      <p style="margin:0 0 10px; font-size:14px; color:#92400e;">✓ Fast ROI & measurable results</p>
+                      <p style="margin:0; font-size:14px; color:#92400e;">✓ Transparent, smooth process</p>
+                    </td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 35px;">
+            <table width="100%" cellpadding="0" cellspacing="0" class="cta-wrap" style="background: linear-gradient(135deg,#0ea5e9 0%,#3b82f6 100%); border-radius:10px; box-shadow: 0 4px 12px rgba(14,165,233,0.18);">
+              <tr><td style="padding:30px 25px; text-align:center;">
+                <p style="margin:0 0 8px; font-size:18px; font-weight:700; color:#ffffff;">Get Your Free Strategy Session</p>
+                <p style="margin:0 0 20px; font-size:14px; color: rgba(224,242,254,0.95);">No commitments — just helpful insights for your goals.</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr><td align="center">
+                    <a class="cta-button" href="{{cta_url}}" target="_blank" style="display:inline-block; background-color:#ffffff; color:#0369a1; text-decoration:none; padding:16px 40px; border-radius:8px; font-size:16px; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                      Schedule Free Call →
+                    </a>
+                  </td></tr>
+                </table>
+                <p style="margin:20px 0 0; font-size:13px; color: rgba(224,242,254,0.95);">⏰ Limited slots available this week</p>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 35px; text-align:center;">
+            <p style="margin:0 0 15px; font-size:15px; color:#475569;">Prefer to reach out directly?</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="padding:5px 0;">
+                  <a href="mailto:help@ewynk.com" style="color:#0ea5e9; text-decoration:none; font-weight:600; font-size:14px;" class="wrap-link">✉ help@ewynk.com</a>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:5px 0;">
+                  <a href="tel:+919971978446" style="color:#0ea5e9; text-decoration:none; font-weight:600; font-size:14px;">☎ +91-9971978446</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="padding:0 30px 35px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; padding:20px;">
+              <tr><td>
+                <p style="margin:0 0 8px; font-size:15px; color:#0f1724; font-weight:600;">Looking forward to supporting your digital growth!</p>
+                <p style="margin:0 0 4px; font-size:14px; color:#475569; font-weight:600;">Vishal Vishwakarma</p>
+                <p style="margin:0 0 2px; font-size:13px; color:#64748b;">Founder & CEO, eWynk</p>
+                <p style="margin:0; font-size:13px;"><a href="https://ewynk.com" style="color:#0ea5e9; text-decoration:none;">ewynk.com</a></p>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        
+        <tr>
+          <td style="background-color:#f8fafc; padding:25px 30px; text-align:center; border-top:1px solid #e2e8f0;">
+            <p style="font-size:13px; color:#475569; margin:0 0 8px;">
+              <strong>eWynk</strong> — Digital Transformation Partner<br/>
+              Plot-202, Block-G, Sector 63, Noida<br/>
+              Uttar Pradesh, India – 201301<br/>
+              Phone: +91-9971978446
+            </p>
+            <p style="font-size:12px; color:#94a3b8; margin:10px 0 0;">
+              You're receiving this message as part of our general outreach to professionals who may benefit from digital transformation services.<br/>
+              <a href="{{unsubscribe_url}}" style="color:#94a3b8; text-decoration:underline;">Unsubscribe</a>
+            </p>
+          </td>
+        </tr>
+       </table>
+    </td></tr>
+  </table>
+</body>
+</html>

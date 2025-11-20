@@ -1,0 +1,41 @@
+Subject: Quick help with launching {{website}}
+
+Milestone Mail
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+eWynk
+
+We build websites that load in <5 seconds, automate workflows that save 40+ hours/week
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Hi {{firstName}},
+
+I came across your domain {{website}} and wanted to check if you're planning to take it live soon.
+
+I run eWynk, and we help businesses launch clean, modern websites quickly. If you'd like help getting {{website}} live, you can book a quick call below.
+
+👉 Book Your Onboarding Call
+{{cta_url}}
+
+Prefer email? Just reply and we'll get back to you ASAP.
+
+- Vishal
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Build your dream website today.
+
+Facebook: https://facebook.com/ewynk
+Twitter: https://twitter.com/ewynk
+Snapchat: https://snapchat.com/add/ewynk
+LinkedIn: https://linkedin.com/company/ewynk
+Instagram: https://instagram.com/ewynk
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+eWynk - Digital Transformation Partner
+Plot-202, Block-G, Sector 63, Noida, Uttar Pradesh, India – 201301
+
+Unsubscribe: {{unsubscribe_url}}

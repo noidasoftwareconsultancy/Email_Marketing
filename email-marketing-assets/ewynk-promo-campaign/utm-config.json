@@ -1,0 +1,45 @@
+{
+  "default": {
+    "utm_source": "email",
+    "utm_medium": "promo",
+    "utm_campaign": "promo_nov2025",
+    "utm_content": "cta_schedule"
+  },
+  "channels": {
+    "email": {
+      "utm_source": "email",
+      "utm_medium": "promo",
+      "variants": {
+        "initial": "cta_schedule",
+        "followup1": "followup1",
+        "followup2": "followup2",
+        "followup3": "followup3"
+      }
+    },
+    "whatsapp": {
+      "utm_source": "whatsapp",
+      "utm_medium": "direct",
+      "utm_campaign": "promo_nov2025",
+      "utm_content": "wa_message"
+    },
+    "sms": {
+      "utm_source": "sms",
+      "utm_medium": "direct",
+      "utm_campaign": "promo_nov2025",
+      "utm_content": "sms_message"
+    }
+  },
+  "audiences": {
+    "ecommerce": "audience_ecommerce",
+    "service_business": "audience_service",
+    "startups": "audience_startups",
+    "general": "audience_general"
+  },
+  "base_url": "https://ewynk.com/contact-us",
+  "examples": {
+    "email_initial": "https://ewynk.com/contact-us?utm_source=email&utm_medium=promo&utm_campaign=promo_nov2025&utm_content=cta_schedule",
+    "email_followup1": "https://ewynk.com/contact-us?utm_source=email&utm_medium=promo&utm_campaign=promo_nov2025&utm_content=followup1",
+    "whatsapp": "https://ewynk.com/contact-us?utm_source=whatsapp&utm_medium=direct&utm_campaign=promo_nov2025&utm_content=wa_message",
+    "email_ecommerce": "https://ewynk.com/contact-us?utm_source=email&utm_medium=promo&utm_campaign=promo_nov2025&utm_content=cta_schedule&utm_term=audience_ecommerce"
+  }
+}

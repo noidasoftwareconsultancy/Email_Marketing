@@ -1,0 +1,37 @@
+Subject: {{subject}}
+
+Hi {{name}},
+
+Hope you're doing well! We're eWynk — a digital transformation partner trusted by growing businesses across India.
+
+We help teams build fast, reliable websites, automate day-to-day workflows, and grow sales online. If you'd like a free 15-minute strategy session to discuss practical steps for your project, book a short call with us:
+
+{{cta_url}}
+
+What We Do:
+• Custom Web Development — Modern, fast, SEO-friendly websites
+• Workflow Automation — Save hours weekly with AI-powered systems
+• Digital Marketing — Get more traffic, leads, and brand visibility
+• Shopify Development — End-to-end e-commerce setup
+
+Why eWynk?
+✓ 100+ brands served across 15+ industries
+✓ 95% on-time delivery
+✓ 99% client satisfaction
+✓ Fast ROI & measurable results
+
+Prefer email? help@ewynk.com
+Call: +91-9971978446
+
+Looking forward to helping you grow,
+
+Vishal Vishwakarma
+Founder & CEO, eWynk
+ewynk.com
+
+---
+eWynk — Digital Transformation Partner
+Plot-202, Block-G, Sector 63, Noida
+Uttar Pradesh, India – 201301
+
+To unsubscribe, click: {{unsubscribe_url}}

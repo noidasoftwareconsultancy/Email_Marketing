@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createSMTPTransporter, sendSMTPEmail } from '@/lib/smtp-mailer';
+import { prepareEmailContent, replaceVariables } from '@/lib/email-variables';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { campaignId } = body;
+    const { campaignId, ctaUrl } = body;
 
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
@@ -66,16 +67,45 @@ export async function POST(request: NextRequest) {
     let sent = 0;
     let failed = 0;
 
-    // Send emails using Nodemailer
+    // Send emails using Nodemailer with variable replacement
     for (const contact of contacts) {
       try {
+        // Prepare personalized email content with variables
+        const { html, text } = prepareEmailContent(
+          campaign.template.htmlBody,
+          campaign.template.textBody,
+          contact,
+          campaignId,
+          { ctaUrl }
+        );
+
+        // Replace variables in subject line with all contact variables
+        const subjectVariables = {
+          name: contact.name || contact.firstName || 'there',
+          firstName: contact.firstName || contact.name?.split(' ')[0] || 'there',
+          lastName: contact.lastName || contact.name?.split(' ').slice(1).join(' ') || '',
+          company: contact.company || '',
+          website: contact.website || contact.email?.split('@')[1] || 'your-domain.com',
+          email: contact.email,
+          jobTitle: contact.jobTitle || '',
+          phone: contact.phone || '',
+          city: contact.city || '',
+          state: contact.state || '',
+          country: contact.country || '',
+        };
+        
+        const personalizedSubject = replaceVariables(
+          campaign.template.subject,
+          subjectVariables
+        );
+
         await sendSMTPEmail(
           transporter,
           senderEmail,
           contact.email,
-          campaign.template.subject,
-          campaign.template.htmlBody,
-          campaign.template.textBody || undefined
+          personalizedSubject,
+          html,
+          text || undefined
         );
 
         await prisma.emailLog.create({

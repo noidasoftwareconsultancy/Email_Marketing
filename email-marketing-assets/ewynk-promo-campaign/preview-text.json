@@ -1,0 +1,52 @@
+{
+  "options": [
+    "Quick, honest advice on improving your online results — no obligation.",
+    "15 minutes to uncover growth opportunities for your website and sales.",
+    "Practical steps to increase leads and automate routine work.",
+    "Friendly, experienced help for websites, stores, and workflows.",
+    "Limited slots this week — schedule a short call to explore options.",
+    "Free strategy session to boost your digital presence.",
+    "No sales pitch — just actionable insights for your business.",
+    "Discover what's holding back your website performance.",
+    "Get expert advice without any commitment.",
+    "See how automation can save you hours every week."
+  ],
+  "pairings": [
+    {
+      "subject": "Free strategy session — no strings attached",
+      "preview": "Quick, honest advice on improving your online results — no obligation.",
+      "audience": "general",
+      "recommended": true
+    },
+    {
+      "subject": "Book a free call with eWynk — limited slots",
+      "preview": "15 minutes to uncover growth opportunities for your website and sales.",
+      "audience": "general",
+      "recommended": true
+    },
+    {
+      "subject": "Turn your website into a lead machine",
+      "preview": "Practical steps to increase leads and automate routine work.",
+      "audience": "general",
+      "recommended": true
+    },
+    {
+      "subject": "Boost your Shopify store sales — free consultation",
+      "preview": "Free e-commerce audit to find hidden revenue opportunities.",
+      "audience": "ecommerce",
+      "recommended": true
+    },
+    {
+      "subject": "Get more service bookings from your website",
+      "preview": "Automate client onboarding and save 10 hours every week.",
+      "audience": "service_business",
+      "recommended": true
+    },
+    {
+      "subject": "Launch your MVP faster with eWynk",
+      "preview": "Startup-friendly development to get you from idea to market quickly.",
+      "audience": "startups",
+      "recommended": true
+    }
+  ]
+}

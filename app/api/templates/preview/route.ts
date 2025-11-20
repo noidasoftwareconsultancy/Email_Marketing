@@ -1,65 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { replaceTemplateVariables, calculateTemplateScore } from '@/lib/template-utils';
-import { Contact } from '@/lib/types';
+import { prepareEmailContent, validateTemplate, replaceVariables, extractContactVariables, getLogoUrls, generateCampaignUrls } from '@/lib/email-variables';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { htmlBody, subject, previewText, contactData } = body;
+    const { htmlBody, textBody, subject, previewText, sampleContact } = body;
 
-    // Create sample contact data
-    const sampleContact: Contact = {
-      id: 'sample',
-      email: contactData?.email || 'john.doe@example.com',
-      name: contactData?.name || 'John Doe',
-      firstName: contactData?.firstName || 'John',
-      lastName: contactData?.lastName || 'Doe',
-      phone: contactData?.phone || '+1 (555) 123-4567',
-      company: contactData?.company || 'Acme Corp',
-      jobTitle: contactData?.jobTitle || 'Marketing Manager',
-      website: contactData?.website || 'https://example.com',
-      address: contactData?.address || '123 Main St',
-      city: contactData?.city || 'San Francisco',
-      state: contactData?.state || 'CA',
-      country: contactData?.country || 'United States',
-      zipCode: contactData?.zipCode || '94102',
+    // Validate template
+    const validation = validateTemplate(htmlBody + (subject || ''));
+
+    // Create sample contact if not provided
+    const contact = sampleContact || {
+      id: 'sample-id',
+      email: 'john.doe@example.com',
+      name: 'John Doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      company: 'Acme Corporation',
+      jobTitle: 'Marketing Director',
+      phone: '+1 (555) 123-4567',
+      website: 'acme.com',
+      city: 'New York',
+      state: 'NY',
+      country: 'USA',
+      zipCode: '10001',
       tags: [],
+      customData: null,
+      source: null,
+      notes: null,
       status: 'ACTIVE',
+      listId: null,
+      userId: 'sample-user',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    const templateData = {
-      contact: sampleContact,
-      campaign: {
-        name: 'Sample Campaign',
-        id: 'sample-campaign',
-      },
+    // Prepare email content with variables
+    const { html, text } = prepareEmailContent(
+      htmlBody,
+      textBody,
+      contact,
+      'preview-campaign-id',
+      {
+        ctaUrl: 'https://example.com/special-offer',
+      }
+    );
+
+    // Replace variables in subject line and preview text
+    const variables = {
+      ...extractContactVariables(contact),
+      ...getLogoUrls(),
+      ...generateCampaignUrls('preview-campaign-id', contact.id, 'https://example.com/special-offer'),
     };
 
-    const previewHtml = replaceTemplateVariables(htmlBody, templateData);
-    const previewSubject = replaceTemplateVariables(subject, templateData);
-    const previewPreviewText = previewText ? replaceTemplateVariables(previewText, templateData) : '';
-
-    // Calculate template score
-    const scoreData = calculateTemplateScore({
-      subject,
-      previewText,
-      htmlBody,
-    });
+    const processedSubject = subject ? replaceVariables(subject, variables) : subject;
+    const processedPreviewText = previewText ? replaceVariables(previewText, variables) : previewText;
 
     return NextResponse.json({
-      htmlBody: previewHtml,
-      subject: previewSubject,
-      previewText: previewPreviewText,
-      score: scoreData.score,
-      suggestions: scoreData.suggestions,
+      success: true,
+      preview: {
+        html,
+        text,
+        subject: processedSubject,
+        previewText: processedPreviewText,
+      },
+      validation,
     });
   } catch (error: any) {
-    console.error('Preview template error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to generate preview',
-      details: error.message 
-    }, { status: 500 });
+    console.error('Template preview error:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to generate preview',
+        details: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

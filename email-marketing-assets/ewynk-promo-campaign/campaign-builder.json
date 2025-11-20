@@ -1,0 +1,271 @@
+{
+  "campaign_sequences": {
+    "full_sequence": {
+      "name": "Complete 4-Email Sequence",
+      "description": "Full promotional sequence with initial email + 3 follow-ups",
+      "total_duration_days": 12,
+      "emails": [
+        {
+          "sequence_number": 1,
+          "day": 0,
+          "template": "eWynk Promo - Main (Full HTML)",
+          "subject_options": [
+            "Free strategy session — no strings attached",
+            "Turn your website into a lead machine",
+            "Book a free call with eWynk — limited slots"
+          ],
+          "recommended_subject": "Free strategy session — no strings attached",
+          "send_time": "10:00 AM",
+          "target": "All contacts with matching tags",
+          "utm_content": "cta_schedule"
+        },
+        {
+          "sequence_number": 2,
+          "day": 3,
+          "template": "eWynk Follow-up 1 - Gentle Reminder",
+          "subject": "Any time for a short chat this week?",
+          "send_time": "2:00 PM",
+          "target": "Contacts who didn't open email 1",
+          "utm_content": "followup1"
+        },
+        {
+          "sequence_number": 3,
+          "day": 7,
+          "template": "eWynk Follow-up 2 - Value Add (3 Tips)",
+          "subject": "3 quick wins to improve conversions",
+          "send_time": "11:00 AM",
+          "target": "Contacts who opened but didn't click",
+          "utm_content": "followup2"
+        },
+        {
+          "sequence_number": 4,
+          "day": 12,
+          "template": "eWynk Follow-up 3 - Last Chance",
+          "subject": "Final call — a few slots left this month",
+          "send_time": "10:00 AM",
+          "target": "Contacts who engaged but didn't convert",
+          "utm_content": "followup3"
+        }
+      ],
+      "expected_results": {
+        "total_open_rate": "45-55%",
+        "total_click_rate": "8-12%",
+        "total_reply_rate": "3-5%",
+        "total_conversion_rate": "1.5-3%"
+      }
+    },
+    "quick_sequence": {
+      "name": "Quick 2-Email Sequence",
+      "description": "Fast sequence for time-sensitive campaigns",
+      "total_duration_days": 5,
+      "emails": [
+        {
+          "sequence_number": 1,
+          "day": 0,
+          "template": "eWynk Promo - Short Version",
+          "subject": "Quick 15-minute call to boost your site performance",
+          "send_time": "10:00 AM",
+          "target": "All contacts",
+          "utm_content": "cta_schedule"
+        },
+        {
+          "sequence_number": 2,
+          "day": 5,
+          "template": "eWynk Follow-up 3 - Last Chance",
+          "subject": "Final call — a few slots left this week",
+          "send_time": "2:00 PM",
+          "target": "Non-converters from email 1",
+          "utm_content": "followup_quick"
+        }
+      ],
+      "expected_results": {
+        "total_open_rate": "35-45%",
+        "total_click_rate": "5-8%",
+        "total_conversion_rate": "1-2%"
+      }
+    },
+    "segmented_sequence": {
+      "name": "Audience-Segmented Sequence",
+      "description": "Personalized sequence for different audience types",
+      "total_duration_days": 10,
+      "segments": [
+        {
+          "segment_name": "E-commerce",
+          "tags": ["ecommerce", "shopify", "online-store"],
+          "emails": [
+            {
+              "day": 0,
+              "template": "eWynk Promo - E-commerce Focus",
+              "subject": "Boost your Shopify store sales — free consultation",
+              "utm_content": "cta_schedule_ecom"
+            },
+            {
+              "day": 5,
+              "template": "eWynk Follow-up 2 - Value Add (3 Tips)",
+              "subject": "3 ways to reduce cart abandonment",
+              "utm_content": "followup_ecom"
+            },
+            {
+              "day": 10,
+              "template": "eWynk Follow-up 3 - Last Chance",
+              "subject": "Last chance: free e-commerce audit",
+              "utm_content": "followup_final_ecom"
+            }
+          ]
+        },
+        {
+          "segment_name": "Service Business",
+          "tags": ["service", "consulting", "agency"],
+          "emails": [
+            {
+              "day": 0,
+              "template": "eWynk Promo - Service Business Focus",
+              "subject": "Get more service bookings from your website",
+              "utm_content": "cta_schedule_service"
+            },
+            {
+              "day": 5,
+              "template": "eWynk Follow-up 2 - Value Add (3 Tips)",
+              "subject": "Automate your client onboarding process",
+              "utm_content": "followup_service"
+            },
+            {
+              "day": 10,
+              "template": "eWynk Follow-up 3 - Last Chance",
+              "subject": "Final slots: free automation consultation",
+              "utm_content": "followup_final_service"
+            }
+          ]
+        },
+        {
+          "segment_name": "Startups",
+          "tags": ["startup", "founder", "mvp"],
+          "emails": [
+            {
+              "day": 0,
+              "template": "eWynk Promo - Startup Focus",
+              "subject": "Launch your MVP faster with eWynk",
+              "utm_content": "cta_schedule_startup"
+            },
+            {
+              "day": 5,
+              "template": "eWynk Follow-up 1 - Gentle Reminder",
+              "subject": "Still working on your MVP?",
+              "utm_content": "followup_startup"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "best_send_times": {
+    "by_day": {
+      "tuesday": {
+        "best_time": "10:00 AM",
+        "open_rate_boost": "+15%",
+        "reason": "Mid-week, people are settled into work"
+      },
+      "wednesday": {
+        "best_time": "11:00 AM",
+        "open_rate_boost": "+12%",
+        "reason": "Peak engagement day"
+      },
+      "thursday": {
+        "best_time": "2:00 PM",
+        "open_rate_boost": "+10%",
+        "reason": "Post-lunch, pre-weekend planning"
+      }
+    },
+    "avoid": {
+      "monday": "People catching up from weekend",
+      "friday_afternoon": "People winding down for weekend",
+      "weekends": "Low B2B engagement"
+    }
+  },
+  "audience_targeting": {
+    "cold_leads": {
+      "recommended_template": "eWynk Promo - Main (Full HTML)",
+      "recommended_subject": "Free strategy session — no strings attached",
+      "tone": "Educational, low-pressure",
+      "follow_up_count": 3
+    },
+    "warm_leads": {
+      "recommended_template": "eWynk Promo - Short Version",
+      "recommended_subject": "Quick 15-minute call to boost your site performance",
+      "tone": "Direct, action-oriented",
+      "follow_up_count": 2
+    },
+    "hot_leads": {
+      "recommended_template": "eWynk Promo - Short Version",
+      "recommended_subject": "Book a free call with eWynk — limited slots",
+      "tone": "Urgent, exclusive",
+      "follow_up_count": 1,
+      "additional_channel": "WhatsApp"
+    }
+  },
+  "personalization_tokens": {
+    "available": [
+      "{{name}}",
+      "{{firstName}}",
+      "{{lastName}}",
+      "{{company}}",
+      "{{jobTitle}}",
+      "{{website}}",
+      "{{cta_url}}",
+      "{{unsubscribe_url}}"
+    ],
+    "examples": {
+      "basic": "Hi {{name}},",
+      "company": "Hi {{name}} from {{company}},",
+      "role_based": "Hi {{name}}, as a {{jobTitle}}, you know..."
+    }
+  },
+  "success_metrics": {
+    "benchmarks": {
+      "delivery_rate": {
+        "poor": "< 95%",
+        "average": "95-97%",
+        "good": "97-99%",
+        "excellent": "> 99%"
+      },
+      "open_rate": {
+        "poor": "< 15%",
+        "average": "15-25%",
+        "good": "25-35%",
+        "excellent": "> 35%"
+      },
+      "click_rate": {
+        "poor": "< 1%",
+        "average": "1-3%",
+        "good": "3-5%",
+        "excellent": "> 5%"
+      },
+      "conversion_rate": {
+        "poor": "< 0.2%",
+        "average": "0.2-0.5%",
+        "good": "0.5-1%",
+        "excellent": "> 1%"
+      }
+    },
+    "optimization_tips": {
+      "low_open_rate": [
+        "Test different subject lines",
+        "Use personal sender name",
+        "Send at optimal times",
+        "Clean your email list"
+      ],
+      "low_click_rate": [
+        "Make CTA more prominent",
+        "Simplify email design",
+        "Test different CTA text",
+        "Add urgency/scarcity"
+      ],
+      "low_conversion_rate": [
+        "Improve landing page",
+        "Reduce form fields",
+        "Add social proof",
+        "Clarify value proposition"
+      ]
+    }
+  }
+}

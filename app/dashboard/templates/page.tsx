@@ -13,6 +13,9 @@ import { templateSchema, TemplateFormData } from '@/lib/validations';
 import toast from 'react-hot-toast';
 import { emailTemplates } from '@/lib/email-templates';
 import { templateCategories } from '@/lib/config';
+import VariableInserter from '@/components/templates/VariableInserter';
+import VariablePreview from '@/components/templates/VariablePreview';
+import { replaceVariables, getAvailableVariables } from '@/lib/email-variables';
 import {
   PlusIcon,
   DocumentTextIcon,
@@ -25,6 +28,7 @@ import {
   SparklesIcon,
   ChartBarIcon,
   BeakerIcon,
+  CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 
 interface TemplateWithStats extends Template {
@@ -219,6 +223,7 @@ export default function TemplatesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           htmlBody: template.htmlBody,
+          textBody: template.textBody,
           subject: template.subject,
           previewText: template.previewText,
         }),
@@ -547,9 +552,33 @@ export default function TemplatesPage() {
             helperText="40-130 characters shown in email preview (improves open rates by 30-40%)"
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              HTML Body <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">
+                HTML Body <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-2">
+                <VariableInserter 
+                  onInsert={(variable) => {
+                    const textarea = document.querySelector('textarea[name="htmlBody"]') as HTMLTextAreaElement;
+                    if (textarea) {
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const text = textarea.value;
+                      const newText = text.substring(0, start) + variable + text.substring(end);
+                      textarea.value = newText;
+                      textarea.focus();
+                      textarea.setSelectionRange(start + variable.length, start + variable.length);
+                      // Trigger change event
+                      const event = new Event('input', { bubbles: true });
+                      textarea.dispatchEvent(event);
+                    }
+                  }}
+                />
+                {htmlBody && (
+                  <VariablePreview content={htmlBody} subject={subject} />
+                )}
+              </div>
+            </div>
             <textarea
               {...register('htmlBody')}
               rows={12}
@@ -559,9 +588,17 @@ export default function TemplatesPage() {
             {errors.htmlBody && (
               <p className="mt-1 text-sm text-red-600">{errors.htmlBody.message}</p>
             )}
-            <p className="mt-1 text-xs text-gray-500">
-              Use variables like {'{'}{'{'} name {'}'}{'}'},  {'{'}{'{'} company {'}'}{'}'}, {'{'}{'{'} company_name {'}'}{'}'}
-            </p>
+            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs font-medium text-blue-900 mb-1">Available Variables:</p>
+              <div className="flex flex-wrap gap-2">
+                {getAvailableVariables().slice(0, 8).map((v) => (
+                  <code key={v.key} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    {`{{${v.key}}}`}
+                  </code>
+                ))}
+                <span className="text-xs text-blue-600">+ more...</span>
+              </div>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -601,11 +638,71 @@ export default function TemplatesPage() {
           setPreviewTemplate(null);
           setPreviewData(null);
         }}
-        title="Template Preview"
+        title="Template Preview with Variables"
         size="xl"
       >
         {previewTemplate && previewData && (
           <div className="space-y-4">
+            {/* Variable Information */}
+            {previewData.validation && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-900 flex items-center mb-3">
+                  <CodeBracketIcon className="w-5 h-5 mr-2" />
+                  Variables Detected
+                </h4>
+                {previewData.validation.valid ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-green-700 flex items-center">
+                      <span className="mr-2">✓</span>
+                      All variables are valid
+                    </p>
+                    {previewData.preview && previewData.preview.html && (
+                      <div className="mt-3">
+                        <p className="text-xs font-medium text-blue-900 mb-2">Sample Data Used:</p>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-white p-2 rounded border border-blue-100">
+                            <span className="font-medium text-blue-800">Name:</span>{' '}
+                            <span className="text-blue-600">John Doe</span>
+                          </div>
+                          <div className="bg-white p-2 rounded border border-blue-100">
+                            <span className="font-medium text-blue-800">Email:</span>{' '}
+                            <span className="text-blue-600">john@example.com</span>
+                          </div>
+                          <div className="bg-white p-2 rounded border border-blue-100">
+                            <span className="font-medium text-blue-800">Company:</span>{' '}
+                            <span className="text-blue-600">Acme Corp</span>
+                          </div>
+                          <div className="bg-white p-2 rounded border border-blue-100">
+                            <span className="font-medium text-blue-800">Website:</span>{' '}
+                            <span className="text-blue-600">example.com</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-sm text-yellow-700 flex items-center">
+                      <span className="mr-2">⚠</span>
+                      Unknown variables detected
+                    </p>
+                    {previewData.validation.missingVariables && previewData.validation.missingVariables.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-xs font-medium text-yellow-900 mb-1">Unknown Variables:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {previewData.validation.missingVariables.map((v: string) => (
+                            <code key={v} className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                              {`{{${v}}}`}
+                            </code>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Performance Score */}
             {previewData.score !== undefined && (
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
@@ -635,22 +732,40 @@ export default function TemplatesPage() {
             )}
 
             <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600 mb-1">Subject:</p>
-              <p className="font-semibold text-gray-900">{previewData.subject}</p>
+              <p className="text-sm text-gray-600 mb-1">Subject Line (with sample data):</p>
+              <p className="font-semibold text-gray-900">{previewData.preview?.subject || previewData.subject}</p>
             </div>
-            {previewData.previewText && (
+            {(previewData.preview?.previewText || previewData.previewText) && (
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-1">Preview Text:</p>
-                <p className="text-gray-900">{previewData.previewText}</p>
+                <p className="text-gray-900">{previewData.preview?.previewText || previewData.previewText}</p>
               </div>
             )}
-            <div className="border border-gray-200 rounded-lg p-4 bg-white max-h-96 overflow-auto">
-              <p className="text-sm text-gray-600 mb-2">HTML Preview:</p>
-              <div
-                className="prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: previewData.htmlBody }}
-              />
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
+                <p className="text-sm font-medium text-gray-700">Email Preview (with sample contact data)</p>
+              </div>
+              <div className="p-4 bg-white max-h-96 overflow-auto">
+                <div
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: previewData.preview?.html || previewData.htmlBody }}
+                />
+              </div>
             </div>
+            
+            {/* Plain Text Preview */}
+            {previewData.preview?.text && (
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
+                  <p className="text-sm font-medium text-gray-700">Plain Text Version</p>
+                </div>
+                <div className="p-4 bg-white max-h-48 overflow-auto">
+                  <pre className="text-sm text-gray-900 whitespace-pre-wrap font-mono">
+                    {previewData.preview.text}
+                  </pre>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>
