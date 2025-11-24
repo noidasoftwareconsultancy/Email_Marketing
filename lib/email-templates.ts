@@ -539,6 +539,126 @@ export const emailTemplates = {
 </html>
     `,
   },
+
+  domainLaunchHelp: {
+    name: 'Domain Launch Help',
+    description: 'Outreach to new domain owners offering website launch assistance',
+    category: 'Outreach',
+    subject: 'Quick help with launching {{website}}',
+    previewText: 'We help businesses launch clean, modern websites quickly.',
+    htmlBody: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick help with launching {{website}}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body, table, td, a {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    table {
+      border-collapse: collapse !important;
+    }
+    img {
+      border: 0;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+      display: block;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    @media only screen and (max-width: 620px) {
+      .container {
+        width: 100% !important;
+      }
+      .content {
+        padding: 30px 20px !important;
+      }
+      .header-text {
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+      }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; background-color:#8b8b8b; font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+  <!-- Outer Container -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#8b8b8b; padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <!-- Main Container -->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" class="container" style="width:600px; max-width:100%; background-color:#ffffff; margin:0 auto;">
+          <!-- Header with Logo and Tagline -->
+          <tr>
+            <td style="background-color:#000000; padding:40px 30px; text-align:center;">
+              <!-- Logo -->
+              <img src="{{logo_white_url}}" alt="eWynk Logo" width="180" style="display:block; margin:0 auto 30px; max-width:100%; height:auto;" />
+              <!-- Tagline -->
+              <p style="margin:0; font-size:20px; line-height:1.5; color:#ffffff; font-weight:400;" class="header-text">
+                We build websites that load in &lt;5 seconds, automate<br />workflows that save 40+ hours/week
+              </p>
+            </td>
+          </tr>
+          <!-- Main Content -->
+          <tr>
+            <td class="content" style="padding:40px 50px; background-color:#ffffff;">
+              <!-- Greeting -->
+              <p style="margin:0 0 25px; font-size:16px; line-height:1.6; color:#000000;">Hi {{firstName}},</p>
+              <!-- First Paragraph -->
+              <p style="margin:0 0 25px; font-size:16px; line-height:1.6; color:#000000;">
+                I came across your domain <strong>{{website}}</strong> and wanted to check if you're planning to take it live soon.
+              </p>
+              <!-- Second Paragraph -->
+              <p style="margin:0 0 25px; font-size:16px; line-height:1.6; color:#000000;">
+                I run <strong>eWynk</strong>, and we help businesses launch clean, modern websites quickly. If you'd like help getting <strong>{{website}}</strong> live, you can book a quick call below.
+              </p>
+              <!-- CTA Button -->
+              <p style="margin:0 0 25px;">
+                <span style="font-size:16px; color:#000000;">👉 </span>
+                <a href="https://ewynk.com/contact-us" target="_blank" style="font-size:16px; font-weight:700; color:#000000; text-decoration:none;">Book Your Onboarding Call</a>
+              </p>
+              <!-- Alternative Contact -->
+              <p style="margin:0 0 25px; font-size:16px; line-height:1.6; color:#000000;">
+                Prefer email? Just reply and we'll get back to you ASAP.
+              </p>
+              <p style="margin:0 0 4px; font-size:14px; color:#666666; font-weight:600;">Vishal Vishwakarma</p>
+              <p style="margin:0 0 2px; font-size:13px; color:#666666;">Founder & CEO, eWynk</p>
+              <p style="margin:0; font-size:13px;">
+                <a href="https://ewynk.com" style="color:#000000; text-decoration:none;">ewynk.com</a>
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#ffffff; text-align:center;">
+              <!-- Footer Text -->
+              <p style="margin:0 0 20px; font-size:14px; color:#000000;">Build your dream website today.</p>
+            </td>
+          </tr>
+          <!-- Unsubscribe -->
+          <tr>
+            <td style="padding:20px 30px; background-color:#f5f5f5; text-align:center;">
+              <p style="margin:0; font-size:11px; color:#666666; line-height:1.5;">
+                eWynk - Digital Transformation Partner<br />
+                Plot-202, Block-G, Sector 63, Noida, Uttar Pradesh, India – 201301<br />
+                <a href="{{unsubscribe_url}}" style="color:#666666; text-decoration:underline;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `,
+  },
 };
 
 export function getTemplateByKey(key: keyof typeof emailTemplates) {

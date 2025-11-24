@@ -1,12 +1,32 @@
 import nodemailer from 'nodemailer';
 
 /**
- * Create SMTP transporter for Gmail/Google Workspace
+ * Create SMTP transporter for Gmail/Google Workspace or custom SMTP
  * Works with regular password or App Password
  */
 export function createSMTPTransporter(email: string, password: string) {
+  // Check if custom SMTP settings are provided
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = process.env.SMTP_PORT;
+  const smtpUser = process.env.SMTP_USER;
+
+  if (smtpHost && smtpPort) {
+    // Use custom SMTP settings (e.g., Brevo, SendGrid, etc.)
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: parseInt(smtpPort),
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: smtpUser || email,
+        pass: password,
+      },
+    });
+    return transporter;
+  }
+
+  // Default to Gmail
   const transporter = nodemailer.createTransport({
-    service: 'gmail', // Simplified - uses Gmail's settings automatically
+    service: 'gmail',
     auth: {
       user: email,
       pass: password,
@@ -27,8 +47,11 @@ export async function sendSMTPEmail(
   html: string,
   text?: string
 ) {
+  // Use SMTP_EMAIL from environment if available (for Brevo verified sender)
+  const senderEmail = process.env.SMTP_EMAIL || from;
+  
   const mailOptions = {
-    from: `"${process.env.NEXT_PUBLIC_FROM_NAME || 'BulkMailer Pro'}" <${from}>`,
+    from: `"${process.env.NEXT_PUBLIC_FROM_NAME || 'eWynk Mail'}" <${senderEmail}>`,
     to,
     subject,
     html,

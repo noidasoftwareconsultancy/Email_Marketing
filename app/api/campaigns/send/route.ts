@@ -43,20 +43,30 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Get SMTP credentials from user
-    const credentials = campaign.user.googleTokens as any;
+    // Get SMTP credentials - prioritize environment variables over database
+    const envEmail = process.env.SMTP_EMAIL;
+    const envPassword = process.env.SMTP_PASSWORD;
+    const dbCredentials = campaign.user.googleTokens as any;
+    
+    // Use environment variables if available, otherwise fall back to database
+    const credentials = {
+      email: envEmail || dbCredentials?.email,
+      password: envPassword || dbCredentials?.password,
+      type: envEmail ? 'smtp-env' : dbCredentials?.type,
+    };
     
     console.log('User credentials:', {
-      hasCredentials: !!credentials,
-      hasEmail: credentials?.email,
-      hasPassword: credentials?.password,
-      credentialsType: credentials?.type,
+      hasCredentials: !!credentials.email && !!credentials.password,
+      hasEmail: credentials.email,
+      hasPassword: credentials.password ? '***' : undefined,
+      credentialsType: credentials.type,
+      source: envEmail ? 'environment' : 'database',
     });
     
-    if (!credentials || !credentials.email || !credentials.password) {
+    if (!credentials.email || !credentials.password) {
       return NextResponse.json({ 
-        error: 'Gmail not connected. Please connect your Gmail account in Settings.',
-        details: 'No SMTP credentials found for this user'
+        error: 'SMTP not configured. Please set SMTP credentials in environment variables or connect Gmail in Settings.',
+        details: 'No SMTP credentials found'
       }, { status: 400 });
     }
 

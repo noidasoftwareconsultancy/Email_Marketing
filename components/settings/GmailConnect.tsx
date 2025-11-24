@@ -107,6 +107,22 @@ export function GmailConnect() {
           </p>
         </div>
 
+        {/* Environment Variable Notice */}
+        {process.env.NEXT_PUBLIC_SMTP_CONFIGURED === 'true' && (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <CheckCircleIcon className="w-5 h-5 text-purple-600 mt-0.5" />
+              <div>
+                <p className="font-medium text-purple-900">SMTP Configured via Environment</p>
+                <p className="text-sm text-purple-700 mt-1">
+                  Your SMTP settings are configured through environment variables and will be used for all campaigns.
+                  Database credentials below are optional and will be used as fallback.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {checking ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
