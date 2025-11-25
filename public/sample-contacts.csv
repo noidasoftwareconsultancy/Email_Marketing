@@ -1,6 +1,0 @@
-email,name,firstName,lastName,phone,company,tags
-john.doe@example.com,John Doe,John,Doe,+1234567890,Acme Corp,newsletter,customer
-jane.smith@example.com,Jane Smith,Jane,Smith,+1234567891,Tech Inc,newsletter
-bob.wilson@example.com,Bob Wilson,Bob,Wilson,+1234567892,Design Co,customer,vip
-alice.brown@example.com,Alice Brown,Alice,Brown,+1234567893,Marketing Ltd,newsletter,lead
-charlie.davis@example.com,Charlie Davis,Charlie,Davis,+1234567894,Sales Corp,customer
