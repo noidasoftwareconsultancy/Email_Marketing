@@ -57,19 +57,43 @@ model Contact {
   source      String?
   notes       String?
   status      ContactStatus @default(ACTIVE)
+  // New fields for better contact management
+  linkedInUrl String?
+  twitterHandle String?
+  facebookUrl String?
+  birthday    DateTime?
+  gender      String?
+  language    String?     @default("en")
+  timezone    String?
+  score       Int         @default(0)  // Lead scoring
+  rating      Int?        // 1-5 star rating
+  lastContactedAt DateTime?
+  lastEngagedAt DateTime?
+  emailVerified Boolean   @default(false)
+  phoneVerified Boolean   @default(false)
+  doNotEmail  Boolean     @default(false)
+  doNotCall   Boolean     @default(false)
+  // Relationships
   listId      String?
   list        ContactList? @relation(fields: [listId], references: [id], onDelete: SetNull)
   userId      String
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Tracking
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   emailLogs   EmailLog[]
+  activities  ContactActivity[]
+  segments    ContactSegment[]
 
   @@unique([email, userId])
   @@index([userId])
   @@index([listId])
   @@index([status])
   @@index([tags])
+  @@index([company])
+  @@index([score])
+  @@index([lastContactedAt])
+  @@index([createdAt])
 }
 
 model Template {
@@ -194,4 +218,114 @@ enum ContactStatus {
   UNSUBSCRIBED
   BOUNCED
   COMPLAINED
+}
+
+// Contact Activity Log for tracking interactions
+model ContactActivity {
+  id          String      @id @default(cuid())
+  contactId   String
+  contact     Contact     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  type        ActivityType
+  title       String
+  description String?
+  metadata    Json?
+  userId      String
+  createdAt   DateTime    @default(now())
+
+  @@index([contactId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// Contact Segments for dynamic grouping
+model ContactSegment {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  conditions  Json        // Store filter conditions
+  contactIds  String[]    // Cached contact IDs
+  userId      String
+  contacts    Contact[]
+  isActive    Boolean     @default(true)
+  lastUpdated DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+// Contact Field Definitions for custom fields
+model ContactField {
+  id          String      @id @default(cuid())
+  name        String
+  label       String
+  type        FieldType
+  options     String[]    // For dropdown/multi-select
+  isRequired  Boolean     @default(false)
+  isActive    Boolean     @default(true)
+  order       Int         @default(0)
+  userId      String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([name, userId])
+  @@index([userId])
+  @@index([isActive])
+}
+
+// Contact Duplicates tracking
+model ContactDuplicate {
+  id              String      @id @default(cuid())
+  contactId1      String
+  contactId2      String
+  similarityScore Float       // 0-100
+  matchedFields   String[]    // Fields that matched
+  status          DuplicateStatus @default(PENDING)
+  resolvedBy      String?
+  resolvedAt      DateTime?
+  createdAt       DateTime    @default(now())
+
+  @@unique([contactId1, contactId2])
+  @@index([status])
+  @@index([similarityScore])
+}
+
+enum ActivityType {
+  EMAIL_SENT
+  EMAIL_OPENED
+  EMAIL_CLICKED
+  EMAIL_BOUNCED
+  CALL_MADE
+  CALL_RECEIVED
+  MEETING_SCHEDULED
+  MEETING_COMPLETED
+  NOTE_ADDED
+  TAG_ADDED
+  TAG_REMOVED
+  STATUS_CHANGED
+  LIST_CHANGED
+  FORM_SUBMITTED
+  WEBSITE_VISIT
+  CUSTOM
+}
+
+enum FieldType {
+  TEXT
+  NUMBER
+  EMAIL
+  PHONE
+  URL
+  DATE
+  BOOLEAN
+  DROPDOWN
+  MULTI_SELECT
+  TEXTAREA
+}
+
+enum DuplicateStatus {
+  PENDING
+  MERGED
+  IGNORED
+  REVIEWED
 }

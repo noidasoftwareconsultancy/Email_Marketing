@@ -61,6 +61,20 @@ export async function PUT(
         customData: body.customData,
         status: body.status,
         listId: body.listId,
+        // New fields
+        linkedInUrl: body.linkedInUrl,
+        twitterHandle: body.twitterHandle,
+        facebookUrl: body.facebookUrl,
+        birthday: body.birthday ? new Date(body.birthday) : undefined,
+        gender: body.gender,
+        language: body.language,
+        timezone: body.timezone,
+        score: body.score,
+        rating: body.rating,
+        emailVerified: body.emailVerified,
+        phoneVerified: body.phoneVerified,
+        doNotEmail: body.doNotEmail,
+        doNotCall: body.doNotCall,
       },
     });
 

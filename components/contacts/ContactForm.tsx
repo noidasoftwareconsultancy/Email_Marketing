@@ -25,6 +25,21 @@ const contactFormSchema = z.object({
   tags: z.string().optional(),
   source: z.string().optional(),
   notes: z.string().optional(),
+  // New fields
+  linkedInUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
+  twitterHandle: z.string().optional(),
+  facebookUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
+  birthday: z.string().optional(),
+  gender: z.string().optional(),
+  language: z.string().optional(),
+  timezone: z.string().optional(),
+  score: z.number().min(0).max(100).optional(),
+  rating: z.number().min(1).max(5).optional(),
+  emailVerified: z.boolean().optional(),
+  phoneVerified: z.boolean().optional(),
+  doNotEmail: z.boolean().optional(),
+  doNotCall: z.boolean().optional(),
+  listId: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -60,7 +75,28 @@ export function ContactForm({ contact, onSubmit, onCancel, isSubmitting }: Conta
       tags: contact.tags.join(', '),
       source: contact.source || '',
       notes: contact.notes || '',
-    } : {},
+      linkedInUrl: contact.linkedInUrl || '',
+      twitterHandle: contact.twitterHandle || '',
+      facebookUrl: contact.facebookUrl || '',
+      birthday: contact.birthday ? new Date(contact.birthday).toISOString().split('T')[0] : '',
+      gender: contact.gender || '',
+      language: contact.language || 'en',
+      timezone: contact.timezone || '',
+      score: contact.score || 0,
+      rating: contact.rating || undefined,
+      emailVerified: contact.emailVerified || false,
+      phoneVerified: contact.phoneVerified || false,
+      doNotEmail: contact.doNotEmail || false,
+      doNotCall: contact.doNotCall || false,
+      listId: contact.listId || '',
+    } : {
+      language: 'en',
+      score: 0,
+      emailVerified: false,
+      phoneVerified: false,
+      doNotEmail: false,
+      doNotCall: false,
+    },
   });
 
   return (
@@ -172,6 +208,161 @@ export function ContactForm({ contact, onSubmit, onCancel, isSubmitting }: Conta
               placeholder="94102"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Social Media */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Social Media</h3>
+        <div className="space-y-4">
+          <Input
+            label="LinkedIn URL"
+            type="url"
+            {...register('linkedInUrl')}
+            error={errors.linkedInUrl?.message}
+            placeholder="https://linkedin.com/in/username"
+          />
+          <Input
+            label="Twitter Handle"
+            {...register('twitterHandle')}
+            error={errors.twitterHandle?.message}
+            placeholder="@username"
+          />
+          <Input
+            label="Facebook URL"
+            type="url"
+            {...register('facebookUrl')}
+            error={errors.facebookUrl?.message}
+            placeholder="https://facebook.com/username"
+          />
+        </div>
+      </div>
+
+      {/* Personal Information */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+        <div className="space-y-4">
+          <Input
+            label="Birthday"
+            type="date"
+            {...register('birthday')}
+            error={errors.birthday?.message}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Gender
+              </label>
+              <select
+                {...register('gender')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="">Select gender...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Language
+              </label>
+              <select
+                {...register('language')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="pt">Portuguese</option>
+                <option value="zh">Chinese</option>
+                <option value="ja">Japanese</option>
+              </select>
+            </div>
+          </div>
+          <Input
+            label="Timezone"
+            {...register('timezone')}
+            error={errors.timezone?.message}
+            placeholder="America/New_York"
+            helperText="IANA timezone identifier"
+          />
+        </div>
+      </div>
+
+      {/* Lead Scoring & Rating */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Lead Scoring & Rating</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Lead Score (0-100)"
+              type="number"
+              min="0"
+              max="100"
+              {...register('score', { valueAsNumber: true })}
+              error={errors.score?.message}
+              placeholder="0"
+            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rating (1-5 stars)
+              </label>
+              <select
+                {...register('rating', { valueAsNumber: true })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="">No rating</option>
+                <option value="1">⭐ 1 Star</option>
+                <option value="2">⭐⭐ 2 Stars</option>
+                <option value="3">⭐⭐⭐ 3 Stars</option>
+                <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Preferences & Verification */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Preferences & Verification</h3>
+        <div className="space-y-3">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              {...register('emailVerified')}
+              className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+            />
+            <span className="text-sm text-gray-700">Email Verified</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              {...register('phoneVerified')}
+              className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+            />
+            <span className="text-sm text-gray-700">Phone Verified</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              {...register('doNotEmail')}
+              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+            />
+            <span className="text-sm text-gray-700">Do Not Email</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              {...register('doNotCall')}
+              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+            />
+            <span className="text-sm text-gray-700">Do Not Call</span>
+          </label>
         </div>
       </div>
 
