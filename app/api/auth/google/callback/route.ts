@@ -40,19 +40,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No email found' }, { status: 400 });
     }
 
+    // Check if user exists to preserve refresh token
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    let finalTokens = tokens;
+    if (existingUser?.googleTokens) {
+      const oldTokens = existingUser.googleTokens as any;
+      if (!tokens.refresh_token && oldTokens.refresh_token) {
+        finalTokens = {
+          ...tokens,
+          refresh_token: oldTokens.refresh_token,
+        };
+      }
+    }
+
     // Create or update user
     const user = await prisma.user.upsert({
       where: { email },
       update: {
         name: name || undefined,
         avatar: avatar || undefined,
-        googleTokens: tokens as any,
+        googleTokens: finalTokens as any,
       },
       create: {
         email,
         name: name || undefined,
         avatar: avatar || undefined,
-        googleTokens: tokens as any,
+        googleTokens: finalTokens as any,
       },
     });
 

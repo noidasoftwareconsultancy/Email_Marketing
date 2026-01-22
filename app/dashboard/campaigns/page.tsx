@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { CampaignScheduler } from '@/components/campaigns/CampaignScheduler';
+import { TagSelector } from '@/components/campaigns/TagSelector';
 import { Campaign, Template } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,12 +45,14 @@ export default function CampaignsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CampaignFormData>({
     resolver: zodResolver(campaignSchema),
@@ -131,16 +134,23 @@ export default function CampaignsPage() {
       const url = editingCampaign ? `/api/campaigns/${editingCampaign.id}` : '/api/campaigns';
       const method = editingCampaign ? 'PUT' : 'POST';
 
+      // Use selectedTags state instead of comma-separated string
+      const campaignData = {
+        ...data,
+        targetTags: selectedTags,
+      };
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(campaignData),
       });
 
       if (response.ok) {
         toast.success(editingCampaign ? 'Campaign updated!' : 'Campaign created!');
         setIsModalOpen(false);
         reset();
+        setSelectedTags([]);
         setEditingCampaign(null);
         fetchCampaigns();
       } else {
@@ -186,30 +196,55 @@ export default function CampaignsPage() {
 
   const handleSendNow = async () => {
     if (!schedulingCampaign) return;
-
+    
+    // Close scheduler immediately to show progress
+    setIsSchedulerOpen(false);
     setSendingCampaign(schedulingCampaign.id);
-    try {
-      const response = await fetch('/api/campaigns/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ campaignId: schedulingCampaign.id }),
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(`Campaign sent! ${data.sent} emails delivered.`);
-        setIsSchedulerOpen(false);
-        setSchedulingCampaign(null);
-        fetchCampaigns();
-      } else {
-        const error = await response.json();
-        toast.error(error.error || 'Failed to send campaign');
-      }
+    // Initial send request
+    try {
+        await processBatch(schedulingCampaign.id);
     } catch (error) {
-      toast.error('An error occurred');
-    } finally {
-      setSendingCampaign(null);
+        toast.error('Failed to start campaign');
+        setSendingCampaign(null);
     }
+  };
+
+  const processBatch = async (campaignId: string) => {
+      try {
+          const response = await fetch('/api/campaigns/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaignId }),
+          });
+    
+          const data = await response.json();
+    
+          if (response.ok) {
+             if (data.status === 'COMPLETED') {
+                 toast.success('Campaign sent successfully!');
+                 setSendingCampaign(null);
+                 setSchedulingCampaign(null);
+                 fetchCampaigns();
+             } else if (data.status === 'PAUSED' && data.remaining > 0) {
+                 // Continue sending next batch
+                 // Add small delay to prevent browser freezing/stack overflow
+                 setTimeout(() => processBatch(campaignId), 1000);
+             } else {
+                 // Paused manually or by error
+                 toast.success(`Campaign paused. ${data.remaining} recipients remaining.`);
+                 setSendingCampaign(null);
+                 fetchCampaigns();
+             }
+          } else {
+            toast.error(data.error || 'Failed to send campaign');
+            setSendingCampaign(null);
+          }
+      } catch (error) {
+          console.error("Batch processing error", error);
+          toast.error('Network error during sending. Please resume later.');
+          setSendingCampaign(null);
+      }
   };
 
   const handlePauseCampaign = async (campaignId: string) => {
@@ -287,11 +322,11 @@ export default function CampaignsPage() {
 
   const handleEdit = (campaign: Campaign) => {
     setEditingCampaign(campaign);
+    setSelectedTags(campaign.targetTags || []);
     reset({
       name: campaign.name,
       description: campaign.description || '',
       templateId: campaign.templateId,
-      targetTags: campaign.targetTags.join(', ') as any,
       scheduledAt: campaign.scheduledAt ? new Date(campaign.scheduledAt).toISOString().slice(0, 16) : '' as any,
     });
     setIsModalOpen(true);
@@ -429,6 +464,7 @@ export default function CampaignsPage() {
           <Button
             onClick={() => {
               setEditingCampaign(null);
+              setSelectedTags([]);
               reset({});
               setIsModalOpen(true);
             }}
@@ -733,10 +769,11 @@ export default function CampaignsPage() {
             </div>
           )}
 
-          <Input
-            label="Target Tags (comma separated)"
-            {...register('targetTags')}
-            helperText="Leave empty to send to all contacts"
+          <TagSelector
+            selectedTags={selectedTags}
+            onChange={setSelectedTags}
+            label="Target Tags"
+            helperText="Select tags to target specific contacts, or leave empty to send to all active contacts"
           />
           <Input
             label="Schedule Date & Time (Optional)"
@@ -757,6 +794,7 @@ export default function CampaignsPage() {
               onClick={() => {
                 setIsModalOpen(false);
                 setEditingCampaign(null);
+                setSelectedTags([]);
                 reset({});
               }}
             >
@@ -773,8 +811,10 @@ export default function CampaignsPage() {
       <Modal
         isOpen={isSchedulerOpen}
         onClose={() => {
-          setIsSchedulerOpen(false);
-          setSchedulingCampaign(null);
+          if (!sendingCampaign) {
+            setIsSchedulerOpen(false);
+            setSchedulingCampaign(null);
+          }
         }}
         title={`Send Campaign: ${schedulingCampaign?.name}`}
         size="lg"
@@ -782,10 +822,11 @@ export default function CampaignsPage() {
         {schedulingCampaign && (
           <CampaignScheduler
             campaignId={schedulingCampaign.id}
-            recipientCount={schedulingCampaign.totalRecipients}
+            recipientCount={schedulingCampaign.totalRecipients || 0}
+            targetTags={schedulingCampaign.targetTags}
             onSchedule={handleSchedule}
             onSendNow={handleSendNow}
-            isLoading={sendingCampaign === schedulingCampaign.id}
+            isLoading={!!sendingCampaign}
           />
         )}
       </Modal>

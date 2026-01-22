@@ -42,11 +42,15 @@ export default function ContactsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [selectedList, setSelectedList] = useState<string>('all');
+  const [selectedSource, setSelectedSource] = useState<string>('all');
+  const [minScore, setMinScore] = useState<number | ''>('');
+  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [selectedContacts, setSelectedContacts] = useState<Set<string>>(new Set());
   const [contactLists, setContactLists] = useState<ContactList[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [allTags, setAllTags] = useState<string[]>([]);
+  const [allSources, setAllSources] = useState<string[]>([]);
 
   useEffect(() => {
     fetchContacts();
@@ -56,15 +60,18 @@ export default function ContactsPage() {
 
   useEffect(() => {
     filterContacts();
-  }, [contacts, searchQuery, selectedStatus, selectedTag, selectedList]);
+  }, [contacts, searchQuery, selectedStatus, selectedTag, selectedList, selectedSource, minScore, verifiedOnly]);
 
   useEffect(() => {
-    // Extract all unique tags
+    // Extract all unique tags and sources
     const tags = new Set<string>();
+    const sources = new Set<string>();
     contacts.forEach((contact) => {
       contact.tags.forEach((tag) => tags.add(tag));
+      if (contact.source) sources.add(contact.source);
     });
     setAllTags(Array.from(tags).sort());
+    setAllSources(Array.from(sources).sort());
   }, [contacts]);
 
   const fetchContacts = async () => {
@@ -134,6 +141,18 @@ export default function ContactsPage() {
       } else {
         filtered = filtered.filter((contact) => contact.listId === selectedList);
       }
+    }
+
+    if (selectedSource !== 'all') {
+      filtered = filtered.filter((contact) => contact.source === selectedSource);
+    }
+
+    if (minScore !== '') {
+      filtered = filtered.filter((contact) => (contact.score || 0) >= minScore);
+    }
+
+    if (verifiedOnly) {
+      filtered = filtered.filter((contact) => contact.emailVerified);
     }
 
     setFilteredContacts(filtered);
@@ -312,6 +331,13 @@ export default function ContactsPage() {
           <div className="flex flex-wrap gap-3">
             <Button
               variant="secondary"
+              onClick={() => window.location.href = '/dashboard/contacts/duplicates'}
+            >
+              <UserGroupIcon className="w-5 h-5 mr-2" />
+              Duplicates
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() => setIsStatsModalOpen(true)}
             >
               <ChartBarIcon className="w-5 h-5 mr-2" />
@@ -424,7 +450,7 @@ export default function ContactsPage() {
                   <option value="ACTIVE">Active</option>
                   <option value="UNSUBSCRIBED">Unsubscribed</option>
                   <option value="BOUNCED">Bounced</option>
-                  <option value="COMPLAINED">Complained</option>
+                  <option value="ARCHIVED">Archived</option>
                 </select>
                 <select
                   value={selectedTag}
@@ -447,10 +473,40 @@ export default function ContactsPage() {
                   <option value="none">No List</option>
                   {contactLists.map((list) => (
                     <option key={list.id} value={list.id}>
-                      {list.name} ({list._count?.contacts || 0})
+                      {list.name}
                     </option>
                   ))}
                 </select>
+                <select
+                  value={selectedSource}
+                  onChange={(e) => setSelectedSource(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                >
+                  <option value="all">All Sources</option>
+                  {allSources.map((source) => (
+                    <option key={source} value={source}>
+                      {source}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  placeholder="Min Score"
+                  value={minScore}
+                  onChange={(e) => setMinScore(e.target.value ? Number(e.target.value) : '')}
+                  className="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  min="0"
+                  max="100"
+                />
+                <label className="flex items-center gap-2 px-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={verifiedOnly}
+                    onChange={(e) => setVerifiedOnly(e.target.checked)}
+                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-sm text-gray-600">Verified</span>
+                </label>
               </div>
             </div>
             {selectedContacts.size > 0 && (
@@ -526,8 +582,8 @@ export default function ContactsPage() {
                   </tr>
                 ) : (
                   filteredContacts.map((contact) => (
-                    <tr key={contact.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
+                    <tr key={contact.id} className="hover:bg-gray-50 cursor-pointer">
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={selectedContacts.has(contact.id)}
@@ -535,10 +591,25 @@ export default function ContactsPage() {
                           className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td 
+                        className="px-6 py-4"
+                        onClick={() => window.location.href = `/dashboard/contacts/${contact.id}`}
+                      >
                         <div>
-                          <div className="font-medium text-gray-900">
-                            {contact.name || contact.firstName || 'No name'}
+                          <div className="flex items-center gap-2">
+                            <div className="font-medium text-gray-900">
+                              {contact.name || contact.firstName || 'No name'}
+                            </div>
+                            {contact.emailVerified && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800" title="Email Verified">
+                                ✓
+                              </span>
+                            )}
+                            {contact.score !== undefined && contact.score > 0 && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800" title={`Lead Score: ${contact.score}`}>
+                                ⭐ {contact.score}
+                              </span>
+                            )}
                           </div>
                           <div className="text-sm text-gray-500">{contact.email}</div>
                           {contact.phone && (
@@ -546,7 +617,10 @@ export default function ContactsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td 
+                        className="px-6 py-4"
+                        onClick={() => window.location.href = `/dashboard/contacts/${contact.id}`}
+                      >
                         <div>
                           <div className="text-sm text-gray-900">
                             {contact.company || '-'}
@@ -558,7 +632,10 @@ export default function ContactsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td 
+                        className="px-6 py-4"
+                        onClick={() => window.location.href = `/dashboard/contacts/${contact.id}`}
+                      >
                         <div className="flex flex-wrap gap-1">
                           {contact.tags.length > 0 ? (
                             contact.tags.slice(0, 3).map((tag, index) => (
@@ -579,22 +656,32 @@ export default function ContactsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            contact.status === 'ACTIVE'
-                              ? 'bg-green-100 text-green-700'
-                              : contact.status === 'UNSUBSCRIBED'
-                              ? 'bg-orange-100 text-orange-700'
-                              : contact.status === 'BOUNCED'
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          {contact.status}
-                        </span>
+                      <td 
+                        className="px-6 py-4"
+                        onClick={() => window.location.href = `/dashboard/contacts/${contact.id}`}
+                      >
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full inline-block w-fit ${
+                              contact.status === 'ACTIVE'
+                                ? 'bg-green-100 text-green-700'
+                                : contact.status === 'UNSUBSCRIBED'
+                                ? 'bg-orange-100 text-orange-700'
+                                : contact.status === 'BOUNCED'
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {contact.status}
+                          </span>
+                          {contact.doNotEmail && (
+                            <span className="text-xs text-red-600" title="Do Not Email">
+                              🚫 Email
+                            </span>
+                          )}
+                        </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEdit(contact)}

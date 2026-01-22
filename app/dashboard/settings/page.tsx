@@ -2,6 +2,7 @@
 
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { GmailConnect } from '@/components/settings/GmailConnect';
+import { ProfileSettings } from '@/components/settings/ProfileSettings';
 import { Card } from '@/components/ui/Card';
 
 export default function SettingsPage() {
@@ -40,55 +41,7 @@ export default function SettingsPage() {
           </Card>
         </div>
 
-        <Card>
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Company Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  defaultValue="BulkMailer Pro"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Company Email
-                </label>
-                <input
-                  type="email"
-                  defaultValue="hello@bulkmailerpro.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  defaultValue="https://bulkmailerpro.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  defaultValue="+1 (555) 123-4567"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-        </Card>
+        <ProfileSettings />
       </div>
     </DashboardLayout>
   );

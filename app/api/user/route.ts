@@ -36,12 +36,18 @@ export async function PUT(request: NextRequest) {
         name: body.name,
         email: body.email,
         avatar: body.avatar,
+        company: body.company,
+        jobTitle: body.jobTitle,
+        website: body.website,
       },
       create: {
         id: userId,
         name: body.name,
         email: body.email,
         avatar: body.avatar,
+        company: body.company,
+        jobTitle: body.jobTitle,
+        website: body.website,
       },
     });
 

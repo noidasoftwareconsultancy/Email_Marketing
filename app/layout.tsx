@@ -6,9 +6,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "eWynk Mail - Smart Email Marketing Platform",
-  description: "Professional email marketing solution by eWynk. Send bulk emails, manage contacts, and track campaigns with powerful automation tools.",
-  keywords: "email marketing, bulk email, email campaigns, eWynk, marketing automation, newsletter",
+  title: "e-Yantrik Marketing Tool - Complete Email Marketing Solution",
+  description: "Professional email marketing solution by e-Yantrik. Send bulk emails, manage contacts, and track campaigns with powerful automation tools.",
+  keywords: "email marketing, bulk email, email campaigns, e-Yantrik, marketing automation, newsletter",
 };
 
 export default function RootLayout({

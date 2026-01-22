@@ -14,6 +14,7 @@ import {
 interface CampaignSchedulerProps {
   campaignId: string;
   recipientCount: number;
+  targetTags?: string[];
   onSchedule: (scheduledAt: Date) => Promise<void>;
   onSendNow: () => Promise<void>;
   isLoading?: boolean;
@@ -22,6 +23,7 @@ interface CampaignSchedulerProps {
 export function CampaignScheduler({
   campaignId,
   recipientCount,
+  targetTags = [],
   onSchedule,
   onSendNow,
   isLoading,
@@ -69,11 +71,29 @@ export function CampaignScheduler({
       {/* Recipient Summary */}
       <Card>
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900">Ready to Send</h3>
             <p className="text-gray-600 mt-1">
-              This campaign will be sent to <span className="font-semibold text-primary-600">{recipientCount}</span> recipients
+              This campaign will be sent to <span className="font-semibold text-primary-600">{recipientCount}</span> {recipientCount === 1 ? 'recipient' : 'recipients'}
             </p>
+            {targetTags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="text-xs text-gray-500">Target tags:</span>
+                {targetTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+            {targetTags.length === 0 && (
+              <p className="text-xs text-gray-500 mt-2">
+                Targeting all active contacts
+              </p>
+            )}
           </div>
           <div className="p-3 bg-primary-100 rounded-lg">
             <PaperAirplaneIcon className="w-8 h-8 text-primary-600" />

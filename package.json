@@ -12,6 +12,8 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:verify": "node scripts/verify-migration.js",
+    "db:migrate-contacts": "node scripts/migrate-contacts.js",
     "seed:ewynk-campaign": "tsx scripts/seed-ewynk-campaign.ts"
   },
   "dependencies": {

@@ -153,6 +153,47 @@ export function replaceVariables(
 }
 
 /**
+ * Inject tracking pixel for open tracking
+ */
+export function injectTrackingPixel(html: string, campaignId: string, contactId: string): string {
+  const baseUrl = getBaseUrl();
+  const pixelUrl = `${baseUrl}/api/track/open?cid=${campaignId}&uid=${contactId}`;
+  const pixelHtml = `<img src="${pixelUrl}" alt="" width="1" height="1" style="display:none;width:1px;height:1px;opacity:0;" />`;
+  
+  // Insert before </body> if it exists, otherwise append
+  if (html.includes('</body>')) {
+    return html.replace('</body>', `${pixelHtml}</body>`);
+  }
+  return html + pixelHtml;
+}
+
+/**
+ * Wrap links for click tracking
+ */
+export function wrapLinks(html: string, campaignId: string, contactId: string): string {
+  const baseUrl = getBaseUrl();
+  
+  // Replace href="..." with tracking URL
+  // Exclude mailto:, tel:, #, and existing track links
+  return html.replace(/href=(["'])([^"']*)\1/g, (match, quote, url) => {
+    if (
+      !url ||
+      url.startsWith('mailto:') || 
+      url.startsWith('tel:') || 
+      url.startsWith('#') || 
+      url.includes('/api/track/') ||
+      url.includes('unsubscribe')
+    ) {
+      return match;
+    }
+    
+    const encodedUrl = encodeURIComponent(url);
+    const trackingUrl = `${baseUrl}/api/track/click?cid=${campaignId}&uid=${contactId}&url=${encodedUrl}`;
+    return `href=${quote}${trackingUrl}${quote}`;
+  });
+}
+
+/**
  * Prepare complete email content with all variables replaced
  */
 export function prepareEmailContent(
@@ -163,6 +204,8 @@ export function prepareEmailContent(
   options: {
     ctaUrl?: string;
     additionalVariables?: Record<string, any>;
+    trackOpens?: boolean;
+    trackClicks?: boolean;
   } = {}
 ): { html: string; text: string | null } {
   // Combine all variables
@@ -174,8 +217,20 @@ export function prepareEmailContent(
   };
   
   // Replace variables in both HTML and text versions
-  const html = replaceVariables(htmlTemplate, variables);
+  let html = replaceVariables(htmlTemplate, variables);
   const text = textTemplate ? replaceVariables(textTemplate, variables) : null;
+
+  // Add tracking if enabled (default true)
+  const trackOpens = options.trackOpens ?? true;
+  const trackClicks = options.trackClicks ?? true;
+
+  if (trackClicks) {
+    html = wrapLinks(html, campaignId, contact.id);
+  }
+
+  if (trackOpens) {
+    html = injectTrackingPixel(html, campaignId, contact.id);
+  }
   
   return { html, text };
 }
