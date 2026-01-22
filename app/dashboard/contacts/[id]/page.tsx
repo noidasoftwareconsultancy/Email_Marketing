@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ContactDetailView } from '@/components/contacts/ContactDetailView';
 import { ContactForm } from '@/components/contacts/ContactForm';
@@ -10,19 +10,22 @@ import { Contact } from '@/lib/types';
 import toast from 'react-hot-toast';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
-export default function ContactDetailPage({ params }: { params: { id: string } }) {
+export default function ContactDetailPage() {
+  const params = useParams();
   const router = useRouter();
   const [contact, setContact] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetchContact();
-  }, [params.id]);
+    if (params?.id) {
+      fetchContact();
+    }
+  }, [params?.id]);
 
   const fetchContact = async () => {
     try {
-      const response = await fetch(`/api/contacts/${params.id}`);
+      const response = await fetch(`/api/contacts/${params?.id}`);
       if (response.ok) {
         const data = await response.json();
         setContact(data);
@@ -39,7 +42,7 @@ export default function ContactDetailPage({ params }: { params: { id: string } }
 
   const handleEdit = async (data: any) => {
     try {
-      const response = await fetch(`/api/contacts/${params.id}`, {
+      const response = await fetch(`/api/contacts/${params?.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -63,7 +66,7 @@ export default function ContactDetailPage({ params }: { params: { id: string } }
     }
 
     try {
-      const response = await fetch(`/api/contacts/${params.id}`, {
+      const response = await fetch(`/api/contacts/${params?.id}`, {
         method: 'DELETE',
       });
 

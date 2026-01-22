@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createSMTPTransporter, sendSMTPEmail } from '@/lib/smtp-mailer';
 import { createGmailTransporter } from '@/lib/gmail';
-import { prepareEmailContent, injectTrackingPixel, wrapLinks } from '@/lib/email-variables';
+import { prepareEmailContent, injectTrackingPixel, wrapLinks, replaceVariables } from '@/lib/email-variables';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Check User Quota
     const user = await prisma.user.findUnique({
       where: { id: campaign.userId },
-      select: { emailQuota: true, emailsSentToday: true, lastEmailSentAt: true }
+      select: { emailQuota: true, emailsSentToday: true, lastResetDate: true }
     });
 
     if (!user) {
@@ -36,14 +36,17 @@ export async function POST(request: NextRequest) {
 
     // Reset daily quota if new day
     const now = new Date();
-    const lastSent = user.lastEmailSentAt ? new Date(user.lastEmailSentAt) : new Date(0);
+    const lastReset = user.lastResetDate ? new Date(user.lastResetDate) : new Date(0);
     let sentToday = user.emailsSentToday;
 
-    if (lastSent.getDate() !== now.getDate() || lastSent.getMonth() !== now.getMonth() || lastSent.getFullYear() !== now.getFullYear()) {
+    if (lastReset.getDate() !== now.getDate() || lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
         sentToday = 0;
         await prisma.user.update({
             where: { id: campaign.userId },
-            data: { emailsSentToday: 0 }
+            data: { 
+              emailsSentToday: 0,
+              lastResetDate: now
+            }
         });
     }
 
@@ -120,6 +123,7 @@ export async function POST(request: NextRequest) {
     const envEmail = process.env.SMTP_EMAIL;
     const envPassword = process.env.SMTP_PASSWORD;
     const dbTokens = campaign.user.googleTokens as any;
+    const ctaUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     try {
         if (envEmail && envPassword) {
@@ -239,6 +243,14 @@ export async function POST(request: NextRequest) {
 
       // Add delay to respect rate limits
       await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // Update User Quota with actually sent emails
+    if (sent > 0) {
+        await prisma.user.update({
+            where: { id: campaign.userId },
+            data: { emailsSentToday: { increment: sent } }
+        });
     }
 
     // Update campaign stats
