@@ -10,7 +10,12 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(contacts);
+    const safeContacts = contacts.map((contact) => ({
+      ...contact,
+      email: contact.email || '',
+    }));
+
+    return NextResponse.json(safeContacts);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch contacts' }, { status: 500 });
   }
@@ -65,7 +70,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(contact);
+    return NextResponse.json({
+      ...contact,
+      email: contact.email || '',
+    });
   } catch (error: any) {
     console.error('Create contact error:', error);
     return NextResponse.json({ 

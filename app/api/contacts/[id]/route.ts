@@ -15,7 +15,10 @@ export async function GET(
       return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
     }
 
-    return NextResponse.json(contact);
+    return NextResponse.json({
+      ...contact,
+      email: contact.email || '',
+    });
   } catch (error: any) {
     console.error('Get contact error:', error);
     return NextResponse.json({ 
@@ -78,7 +81,10 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(contact);
+    return NextResponse.json({
+      ...contact,
+      email: contact.email || '',
+    });
   } catch (error: any) {
     console.error('Update contact error:', error);
     return NextResponse.json({ 

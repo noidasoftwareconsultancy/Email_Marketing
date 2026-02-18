@@ -63,11 +63,12 @@ export async function POST(request: NextRequest) {
         }, { status: 403 });
     }
     
-    // First count total recipients for the campaign (regardless of sent status)
+    // First count total recipients for the campaign (with valid email, regardless of sent status)
     const totalRecipients = await prisma.contact.count({
       where: {
         userId: campaign.userId,
         status: 'ACTIVE',
+        email: { not: null },
         tags: targetTags.length > 0 ? { hasSome: targetTags } : undefined,
       },
     });
@@ -87,11 +88,12 @@ export async function POST(request: NextRequest) {
         }, { status: 403 });
     }
 
-    // Fetch contacts that don't have an email log for this campaign
+    // Fetch contacts that don't have an email log for this campaign and have an email
     const contacts = await prisma.contact.findMany({
       where: {
         userId: campaign.userId,
         status: 'ACTIVE',
+        email: { not: null },
         tags: targetTags.length > 0 ? { hasSome: targetTags } : undefined,
         emailLogs: {
           none: {
@@ -177,8 +179,8 @@ export async function POST(request: NextRequest) {
           firstName: contact.firstName || contact.name?.split(' ')[0] || 'there',
           lastName: contact.lastName || contact.name?.split(' ').slice(1).join(' ') || '',
           company: contact.company || '',
-          website: contact.website || contact.email?.split('@')[1] || 'your-domain.com',
-          email: contact.email,
+          website: contact.website || (contact.email ? contact.email.split('@')[1] : 'your-domain.com'),
+          email: contact.email || undefined,
           jobTitle: contact.jobTitle || '',
           phone: contact.phone || '',
           city: contact.city || '',
@@ -190,6 +192,10 @@ export async function POST(request: NextRequest) {
           campaign.template.subject,
           subjectVariables
         );
+
+        if (!contact.email) {
+          continue;
+        }
 
         await sendSMTPEmail(
           transporter,

@@ -9,7 +9,7 @@ import { Contact } from '@/lib/types';
 import { suggestedTags, contactSources } from '@/lib/config';
 
 const contactFormSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
   name: z.string().optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
@@ -110,7 +110,6 @@ export function ContactForm({ contact, onSubmit, onCancel, isSubmitting }: Conta
             type="email"
             {...register('email')}
             error={errors.email?.message}
-            required
             placeholder="john@example.com"
           />
           <div className="grid grid-cols-2 gap-4">
