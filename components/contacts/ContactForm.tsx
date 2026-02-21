@@ -13,7 +13,7 @@ const contactFormSchema = z.object({
   name: z.string().optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().min(1, 'Phone number is required'),
   company: z.string().optional(),
   jobTitle: z.string().optional(),
   website: z.string().url('Invalid URL').optional().or(z.literal('')),
@@ -34,7 +34,7 @@ const contactFormSchema = z.object({
   language: z.string().optional(),
   timezone: z.string().optional(),
   score: z.number().min(0).max(100).optional(),
-  rating: z.number().min(1).max(5).optional(),
+  rating: z.number().min(1).max(5),
   emailVerified: z.boolean().optional(),
   phoneVerified: z.boolean().optional(),
   doNotEmail: z.boolean().optional(),
@@ -59,11 +59,11 @@ export function ContactForm({ contact, onSubmit, onCancel, isSubmitting }: Conta
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: contact ? {
-      email: contact.email,
+      email: contact.email || '',
       name: contact.name || '',
       firstName: contact.firstName || '',
       lastName: contact.lastName || '',
-      phone: contact.phone || '',
+      phone: contact.phone ,
       company: contact.company || '',
       jobTitle: contact.jobTitle || '',
       website: contact.website || '',
@@ -98,6 +98,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isSubmitting }: Conta
       doNotCall: false,
     },
   });
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -321,6 +322,9 @@ export function ContactForm({ contact, onSubmit, onCancel, isSubmitting }: Conta
                 <option value="4">⭐⭐⭐⭐ 4 Stars</option>
                 <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
               </select>
+              {errors.rating && (
+                <p className="mt-1 text-sm text-red-600">{errors.rating.message}</p>
+              )}
             </div>
           </div>
         </div>

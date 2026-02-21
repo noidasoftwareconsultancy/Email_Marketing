@@ -45,7 +45,7 @@ export async function PUT(
     const contact = await prisma.contact.update({
       where: { id },
       data: {
-        email: body.email,
+        email: body.email || null,
         name: body.name,
         firstName: body.firstName,
         lastName: body.lastName,

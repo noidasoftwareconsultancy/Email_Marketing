@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     const contact = await prisma.contact.create({
       data: {
-        email: body.email,
+        email: body.email || null,
         name: body.name,
         firstName: body.firstName,
         lastName: body.lastName,
@@ -55,12 +55,12 @@ export async function POST(request: NextRequest) {
         linkedInUrl: body.linkedInUrl,
         twitterHandle: body.twitterHandle,
         facebookUrl: body.facebookUrl,
-        birthday: body.birthday ? new Date(body.birthday) : undefined,
+        birthday: body.birthday && body.birthday !== '' ? new Date(body.birthday) : undefined,
         gender: body.gender,
         language: body.language || 'en',
         timezone: body.timezone,
-        score: body.score || 0,
-        rating: body.rating,
+        score: body.score && typeof body.score === 'number' && !isNaN(body.score) ? body.score : 0,
+        rating: body.rating && typeof body.rating === 'number' && !isNaN(body.rating) ? body.rating : null,
         emailVerified: body.emailVerified || false,
         phoneVerified: body.phoneVerified || false,
         doNotEmail: body.doNotEmail || false,
