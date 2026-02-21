@@ -169,6 +169,8 @@ export default function ContactsPage() {
         body: JSON.stringify(data),
       });
 
+      console.log('Response:', response);
+
       if (response.ok) {
         toast.success(editingContact ? 'Contact updated!' : 'Contact added!');
         setIsModalOpen(false);
